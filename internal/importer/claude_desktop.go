@@ -19,7 +19,20 @@ type ClaudeDesktopConfig struct {
 type ClaudeDesktopServer struct {
 	Command string            `json:"command"`
 	Args    []string          `json:"args"`
+	URL     string            `json:"url,omitempty"`
 	Env     map[string]string `json:"env,omitempty"`
+}
+
+func parseConfig(configPath string) (*ClaudeDesktopConfig, error) {
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("read config: %w", err)
+	}
+	var cfg ClaudeDesktopConfig
+	if err := json.Unmarshal(data, &cfg); err != nil {
+		return nil, fmt.Errorf("parse config: %w", err)
+	}
+	return &cfg, nil
 }
 
 // DefaultConfigPath はOSに応じたClaude Desktopの設定ファイルパスを返す
@@ -46,14 +59,9 @@ type ImportResult struct {
 
 // ImportFromClaudeDesktop は claude_desktop_config.json を読み込んでDBに保存する
 func ImportFromClaudeDesktop(configPath string) (*ImportResult, error) {
-	data, err := os.ReadFile(configPath)
+	cfg, err := parseConfig(configPath)
 	if err != nil {
-		return nil, fmt.Errorf("read config: %w", err)
-	}
-
-	var cfg ClaudeDesktopConfig
-	if err := json.Unmarshal(data, &cfg); err != nil {
-		return nil, fmt.Errorf("parse config: %w", err)
+		return nil, err
 	}
 
 	result := &ImportResult{}
@@ -66,6 +74,11 @@ func ImportFromClaudeDesktop(configPath string) (*ImportResult, error) {
 			continue
 		}
 
+		transport := db.TransportStdio
+		if server.URL != "" {
+			transport = db.TransportHTTP
+		}
+
 		argsJSON, err := json.Marshal(server.Args)
 		if err != nil {
 			result.Errors = append(result.Errors, fmt.Sprintf("%s: %s", name, err))
@@ -74,9 +87,10 @@ func ImportFromClaudeDesktop(configPath string) (*ImportResult, error) {
 
 		newServer := db.MCPServer{
 			Name:      name,
-			Transport: db.TransportStdio,
+			Transport: transport,
 			Command:   server.Command,
 			Args:      string(argsJSON),
+			URL:       server.URL,
 			Status:    db.StatusDisconnected,
 		}
 

@@ -9,6 +9,9 @@ const router = useRouter()
 const showAddForm = ref(false)
 const form = ref({ name: '', transport: 'stdio', command: '', args: '[]', url: '' })
 const connecting = ref<number | null>(null)
+const importing = ref(false)
+const importResult = ref<{ imported: string[], skipped: string[], errors: string[] } | null>(null)
+const importError = ref<string | null>(null)
 
 const statusColors: Record<string, string> = {
   connected: 'bg-green-500',
@@ -54,6 +57,19 @@ async function handleDelete(id: number) {
 function openTools(id: number) {
   router.push(`/servers/${id}/tools`)
 }
+
+async function handleImport() {
+  importing.value = true
+  importResult.value = null
+  importError.value = null
+  try {
+    importResult.value = await store.importClaudeDesktop()
+  } catch (e) {
+    importError.value = String(e)
+  } finally {
+    importing.value = false
+  }
+}
 </script>
 
 <template>
@@ -63,12 +79,38 @@ function openTools(id: number) {
         <h2 class="text-lg font-semibold">MCP Servers</h2>
         <p class="text-sm text-muted-foreground">{{ store.servers.length }} server(s) configured</p>
       </div>
-      <button
-        @click="showAddForm = !showAddForm"
-        class="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity"
-      >
-        + Add Server
-      </button>
+      <div class="flex gap-2">
+        <button
+          @click="handleImport"
+          :disabled="importing"
+          class="px-3 py-1.5 text-sm border border-border rounded-md hover:bg-accent disabled:opacity-50 transition-colors"
+        >
+          {{ importing ? 'Importing…' : '↓ Import Claude Desktop' }}
+        </button>
+        <button
+          @click="showAddForm = !showAddForm"
+          class="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity"
+        >
+          + Add Server
+        </button>
+      </div>
+    </div>
+
+    <!-- Import result banner -->
+    <div v-if="importResult" class="mb-4 p-3 border border-border rounded-lg text-xs space-y-1">
+      <p class="font-medium">Import complete</p>
+      <p v-if="importResult.imported?.length" class="text-green-400">
+        ✓ Imported: {{ importResult.imported.join(', ') }}
+      </p>
+      <p v-if="importResult.skipped?.length" class="text-muted-foreground">
+        — Skipped (already exist): {{ importResult.skipped.join(', ') }}
+      </p>
+      <p v-for="err in importResult.errors" :key="err" class="text-destructive">✗ {{ err }}</p>
+      <button @click="importResult = null" class="text-muted-foreground hover:text-foreground mt-1">Dismiss</button>
+    </div>
+    <div v-if="importError" class="mb-4 p-3 border border-destructive/50 rounded-lg text-xs text-destructive">
+      {{ importError }}
+      <button @click="importError = null" class="ml-2 hover:opacity-70">✕</button>
     </div>
 
     <!-- Add form -->
@@ -97,7 +139,7 @@ function openTools(id: number) {
         </div>
         <div>
           <label class="text-xs text-muted-foreground">Args (JSON array)</label>
-          <input v-model="form.args" placeholder='["-y", "@modelcontextprotocol/server-filesystem", "/path"]'
+          <input v-model="form.args" placeholder="[&quot;-y&quot;, &quot;@modelcontextprotocol/server-filesystem&quot;, &quot;/path&quot;]"
             class="mt-1 w-full px-3 py-1.5 text-sm bg-input border border-border rounded-md focus:outline-none font-mono" />
         </div>
       </template>

@@ -7,6 +7,7 @@ import {
   ConnectServer, DisconnectServer,
   GetTools, CallTool,
   GetEvents,
+  GetClaudeDesktopConfigPath, ImportClaudeDesktopConfig,
 } from '../../wailsjs/go/main/App'
 import { EventsOn } from '../../wailsjs/runtime/runtime'
 
@@ -78,6 +79,14 @@ export const useServersStore = defineStore('servers', () => {
     return GetEvents(serverID)
   }
 
+  async function importClaudeDesktop(): Promise<importer.ImportResult> {
+    const configPath = await GetClaudeDesktopConfigPath()
+    const result = await ImportClaudeDesktopConfig(configPath)
+    // インポート後にサーバーリストをリフレッシュ
+    await fetchServers()
+    return result
+  }
+
   function subscribeToEvents() {
     EventsOn('server:status', (updated: db.MCPServer) => {
       const idx = servers.value.findIndex(s => s.ID === updated.ID)
@@ -86,7 +95,7 @@ export const useServersStore = defineStore('servers', () => {
     })
 
     EventsOn('server:event', (_payload: ServerEventPayload) => {
-      // EventsViewページ側で購読
+      // handled in EventsView
     })
   }
 
@@ -94,6 +103,6 @@ export const useServersStore = defineStore('servers', () => {
     servers, toolsCache, loading, error,
     fetchServers, addServer, updateServer, removeServer,
     connect, disconnect, fetchTools, callTool, fetchEvents,
-    subscribeToEvents,
+    importClaudeDesktop, subscribeToEvents,
   }
 })

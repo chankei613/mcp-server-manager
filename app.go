@@ -25,7 +25,7 @@ type App struct {
 
 type clientEntry struct {
 	client    *mcp.Client
-	transport *mcp.StdioTransport
+	transport mcp.Transport
 	cancel    context.CancelFunc
 }
 
@@ -131,6 +131,26 @@ func (a *App) ConnectServer(id uint) error {
 		}
 
 		transport := mcp.NewStdioTransport(server.Command, args, onEvent)
+		if err := transport.Start(ctx); err != nil {
+			cancel()
+			a.updateStatus(id, db.StatusError, err.Error())
+			return err
+		}
+
+		client := mcp.NewClient(transport, id)
+		if _, err := client.Initialize(ctx); err != nil {
+			transport.Stop()
+			cancel()
+			a.updateStatus(id, db.StatusError, err.Error())
+			return fmt.Errorf("initialize: %w", err)
+		}
+
+		a.clients[id] = &clientEntry{client: client, transport: transport, cancel: cancel}
+		a.checker.Register(id, &health.ServerEntry{Client: client, Transport: transport, Cancel: cancel})
+		a.updateStatus(id, db.StatusConnected, "")
+
+	case db.TransportHTTP:
+		transport := mcp.NewHTTPTransport(server.URL, onEvent)
 		if err := transport.Start(ctx); err != nil {
 			cancel()
 			a.updateStatus(id, db.StatusError, err.Error())

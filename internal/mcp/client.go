@@ -8,12 +8,12 @@ import (
 
 // Client はMCPサーバーとの高レベルなやり取りを担当する
 type Client struct {
-	transport *StdioTransport
+	transport Transport
 	serverID  uint
 	info      *InitializeResult
 }
 
-func NewClient(transport *StdioTransport, serverID uint) *Client {
+func NewClient(transport Transport, serverID uint) *Client {
 	return &Client{transport: transport, serverID: serverID}
 }
 

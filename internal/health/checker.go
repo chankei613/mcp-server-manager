@@ -17,7 +17,7 @@ const (
 // ServerEntry はヘルスチェック対象のサーバー情報
 type ServerEntry struct {
 	Client    *mcp.Client
-	Transport *mcp.StdioTransport
+	Transport mcp.Transport
 	Cancel    context.CancelFunc
 }
 
