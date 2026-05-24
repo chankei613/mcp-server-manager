@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"strings"
 	"sync"
@@ -17,6 +18,7 @@ import (
 type StdioTransport struct {
 	command string
 	args    []string
+	env     []string // "KEY=VALUE" 形式。元の環境変数にマージして渡す
 
 	cmd    *exec.Cmd
 	stdin  io.WriteCloser
@@ -31,10 +33,11 @@ type StdioTransport struct {
 	onEvent func(eventType, message string)
 }
 
-func NewStdioTransport(command string, args []string, onEvent func(string, string)) *StdioTransport {
+func NewStdioTransport(command string, args []string, env []string, onEvent func(string, string)) *StdioTransport {
 	return &StdioTransport{
 		command: command,
 		args:    args,
+		env:     env,
 		pending: make(map[int64]chan *Response),
 		onEvent: onEvent,
 	}
@@ -50,6 +53,10 @@ func (t *StdioTransport) Start(ctx context.Context) error {
 	}
 
 	t.cmd = exec.CommandContext(ctx, t.command, t.args...)
+	// 現在の環境変数に追加の env をマージ（PATH等を引き継ぎつつ API キーを渡す）
+	if len(t.env) > 0 {
+		t.cmd.Env = append(os.Environ(), t.env...)
+	}
 
 	var err error
 	t.stdin, err = t.cmd.StdinPipe()

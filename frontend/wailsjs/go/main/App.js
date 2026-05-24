@@ -22,6 +22,10 @@ export function DisconnectServer(arg1) {
   return window['go']['main']['App']['DisconnectServer'](arg1);
 }
 
+export function GetAppVersion() {
+  return window['go']['main']['App']['GetAppVersion']();
+}
+
 export function GetClaudeDesktopConfigPath() {
   return window['go']['main']['App']['GetClaudeDesktopConfigPath']();
 }

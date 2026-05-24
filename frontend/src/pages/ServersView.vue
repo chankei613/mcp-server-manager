@@ -2,9 +2,11 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useServersStore } from '@/stores/servers'
+import { useI18nStore } from '@/stores/i18n'
 
 const store = useServersStore()
 const router = useRouter()
+const i18n = useI18nStore()
 
 onMounted(() => {
   store.fetchServers()
@@ -23,14 +25,6 @@ const statusColors: Record<string, string> = {
   error: 'bg-red-500',
   degraded: 'bg-yellow-500',
   connecting: 'bg-blue-500 animate-pulse',
-}
-
-const statusLabel: Record<string, string> = {
-  connected: 'Connected',
-  disconnected: 'Disconnected',
-  error: 'Error',
-  degraded: 'Degraded',
-  connecting: 'Connecting…',
 }
 
 async function handleAdd() {
@@ -54,10 +48,9 @@ async function handleDisconnect(id: number) {
   await store.disconnect(id)
 }
 
-async function handleDelete(id: number) {
-  if (confirm('Delete this server?')) await store.removeServer(id)
+async function handleDelete(id: number, name: string) {
+  if (confirm(i18n.t('sv_delete_confirm', name))) await store.removeServer(id)
 }
-
 
 async function handleImport() {
   importing.value = true
@@ -77,8 +70,8 @@ async function handleImport() {
   <div class="p-6">
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-lg font-semibold">MCP Servers</h2>
-        <p class="text-sm text-muted-foreground">{{ store.servers.length }} server(s) configured</p>
+        <h2 class="text-lg font-semibold">{{ i18n.t('sv_title') }}</h2>
+        <p class="text-sm text-muted-foreground">{{ i18n.t('sv_count', store.servers.length) }}</p>
       </div>
       <div class="flex gap-2">
         <button
@@ -86,28 +79,28 @@ async function handleImport() {
           :disabled="importing"
           class="px-3 py-1.5 text-sm border border-border rounded-md hover:bg-accent disabled:opacity-50 transition-colors"
         >
-          {{ importing ? 'Importing…' : '↓ Import Claude Desktop' }}
+          {{ importing ? i18n.t('sv_importing') : i18n.t('sv_import_btn') }}
         </button>
         <button
           @click="showAddForm = !showAddForm"
           class="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity"
         >
-          + Add Server
+          {{ i18n.t('sv_add_btn') }}
         </button>
       </div>
     </div>
 
     <!-- Import result banner -->
     <div v-if="importResult" class="mb-4 p-3 border border-border rounded-lg text-xs space-y-1">
-      <p class="font-medium">Import complete</p>
+      <p class="font-medium">{{ i18n.t('sv_import_complete') }}</p>
       <p v-if="importResult.imported?.length" class="text-green-400">
-        ✓ Imported: {{ importResult.imported.join(', ') }}
+        {{ i18n.t('sv_imported', importResult.imported.join(', ')) }}
       </p>
       <p v-if="importResult.skipped?.length" class="text-muted-foreground">
-        — Skipped (already exist): {{ importResult.skipped.join(', ') }}
+        {{ i18n.t('sv_skipped', importResult.skipped.join(', ')) }}
       </p>
       <p v-for="err in importResult.errors" :key="err" class="text-destructive">✗ {{ err }}</p>
-      <button @click="importResult = null" class="text-muted-foreground hover:text-foreground mt-1">Dismiss</button>
+      <button @click="importResult = null" class="text-muted-foreground hover:text-foreground mt-1">{{ i18n.t('sv_dismiss') }}</button>
     </div>
     <div v-if="importError" class="mb-4 p-3 border border-destructive/50 rounded-lg text-xs text-destructive">
       {{ importError }}
@@ -116,15 +109,15 @@ async function handleImport() {
 
     <!-- Add form -->
     <div v-if="showAddForm" class="mb-6 p-4 border border-border rounded-lg space-y-3">
-      <h3 class="text-sm font-medium">New Server</h3>
+      <h3 class="text-sm font-medium">{{ i18n.t('sv_form_title') }}</h3>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="text-xs text-muted-foreground">Name</label>
+          <label class="text-xs text-muted-foreground">{{ i18n.t('sv_form_name') }}</label>
           <input v-model="form.name" placeholder="my-mcp-server"
             class="mt-1 w-full px-3 py-1.5 text-sm bg-input border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-ring" />
         </div>
         <div>
-          <label class="text-xs text-muted-foreground">Transport</label>
+          <label class="text-xs text-muted-foreground">{{ i18n.t('sv_form_transport') }}</label>
           <select v-model="form.transport"
             class="mt-1 w-full px-3 py-1.5 text-sm bg-input border border-border rounded-md focus:outline-none">
             <option value="stdio">stdio</option>
@@ -134,28 +127,28 @@ async function handleImport() {
       </div>
       <template v-if="form.transport === 'stdio'">
         <div>
-          <label class="text-xs text-muted-foreground">Command</label>
+          <label class="text-xs text-muted-foreground">{{ i18n.t('sv_form_command') }}</label>
           <input v-model="form.command" placeholder="npx"
             class="mt-1 w-full px-3 py-1.5 text-sm bg-input border border-border rounded-md focus:outline-none" />
         </div>
         <div>
-          <label class="text-xs text-muted-foreground">Args (JSON array)</label>
+          <label class="text-xs text-muted-foreground">{{ i18n.t('sv_form_args') }}</label>
           <input v-model="form.args" placeholder="[&quot;-y&quot;, &quot;@modelcontextprotocol/server-filesystem&quot;, &quot;/path&quot;]"
             class="mt-1 w-full px-3 py-1.5 text-sm bg-input border border-border rounded-md focus:outline-none font-mono" />
         </div>
       </template>
       <template v-else>
         <div>
-          <label class="text-xs text-muted-foreground">URL</label>
+          <label class="text-xs text-muted-foreground">{{ i18n.t('sv_form_url') }}</label>
           <input v-model="form.url" placeholder="http://localhost:8080"
             class="mt-1 w-full px-3 py-1.5 text-sm bg-input border border-border rounded-md focus:outline-none" />
         </div>
       </template>
       <div class="flex gap-2">
         <button @click="handleAdd"
-          class="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90">Add</button>
+          class="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90">{{ i18n.t('sv_form_add') }}</button>
         <button @click="showAddForm = false"
-          class="px-3 py-1.5 text-sm border border-border rounded-md hover:bg-accent">Cancel</button>
+          class="px-3 py-1.5 text-sm border border-border rounded-md hover:bg-accent">{{ i18n.t('sv_form_cancel') }}</button>
       </div>
     </div>
 
@@ -168,47 +161,40 @@ async function handleImport() {
             <path d="M8 21h8M12 17v4" />
           </svg>
         </div>
-        <h3 class="text-base font-semibold text-foreground">MCP サーバーがまだ登録されていません</h3>
-        <p class="text-sm text-muted-foreground mt-1">以下の方法で MCP サーバーを追加してください</p>
+        <h3 class="text-base font-semibold text-foreground">{{ i18n.t('sv_empty_title') }}</h3>
+        <p class="text-sm text-muted-foreground mt-1">{{ i18n.t('sv_empty_desc') }}</p>
       </div>
 
-      <!-- How-to steps -->
       <div class="space-y-3 mb-8">
         <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-white">
           <span class="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
           <div>
-            <p class="text-sm font-medium">既存の設定を取り込む（推奨）</p>
-            <p class="text-xs text-muted-foreground mt-0.5">
-              Claude Desktop や Claude Code を使っている場合は、設定を自動でインポートできます。
-            </p>
+            <p class="text-sm font-medium">{{ i18n.t('sv_step1_title') }}</p>
+            <p class="text-xs text-muted-foreground mt-0.5">{{ i18n.t('sv_step1_desc') }}</p>
             <button
               @click="$router.push('/import')"
               class="mt-2 text-xs text-primary font-medium hover:opacity-70 transition-opacity"
-            >→ インポートページへ</button>
+            >{{ i18n.t('sv_step1_link') }}</button>
           </div>
         </div>
 
         <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-white">
           <span class="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
           <div>
-            <p class="text-sm font-medium">手動でサーバーを追加</p>
-            <p class="text-xs text-muted-foreground mt-0.5">
-              コマンド（stdio）または URL（HTTP）でサーバーを直接登録します。
-            </p>
+            <p class="text-sm font-medium">{{ i18n.t('sv_step2_title') }}</p>
+            <p class="text-xs text-muted-foreground mt-0.5">{{ i18n.t('sv_step2_desc') }}</p>
             <button
               @click="showAddForm = true"
               class="mt-2 text-xs text-primary font-medium hover:opacity-70 transition-opacity"
-            >→ + Add Server</button>
+            >→ {{ i18n.t('sv_add_btn') }}</button>
           </div>
         </div>
 
         <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-white">
           <span class="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
           <div>
-            <p class="text-sm font-medium">接続してツールを確認</p>
-            <p class="text-xs text-muted-foreground mt-0.5">
-              サーバーを追加したら「Connect」を押して接続。「Browse Tools」でツール一覧とテスト実行ができます。
-            </p>
+            <p class="text-sm font-medium">{{ i18n.t('sv_step3_title') }}</p>
+            <p class="text-xs text-muted-foreground mt-0.5">{{ i18n.t('sv_step3_desc') }}</p>
           </div>
         </div>
       </div>
@@ -217,11 +203,11 @@ async function handleImport() {
         <button
           @click="$router.push('/import')"
           class="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
-        >↓ 設定をインポート</button>
+        >{{ i18n.t('sv_import_config') }}</button>
         <button
           @click="showAddForm = true"
           class="px-4 py-2 text-sm border border-border rounded-lg hover:bg-accent transition-colors"
-        >+ 手動で追加</button>
+        >{{ i18n.t('sv_add_manual') }}</button>
       </div>
     </div>
 
@@ -244,28 +230,28 @@ async function handleImport() {
             disabled
             @click.stop
             class="text-xs px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 border border-blue-200 cursor-not-allowed"
-          >Connecting…</button>
+          >{{ i18n.t('sv_connecting') }}</button>
           <button
             v-else-if="server.status === 'connected'"
             @click.stop="handleDisconnect(server.ID)"
             class="text-xs px-3 py-1.5 rounded-md bg-green-50 text-green-700 border border-green-300 hover:bg-green-100 transition-colors"
-          >● Connected</button>
+          >{{ i18n.t('sv_connected') }}</button>
           <button
             v-else-if="server.status === 'error'"
             @click.stop="handleConnect(server.ID)"
             :disabled="connecting === server.ID"
             class="text-xs px-3 py-1.5 rounded-md bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 transition-colors disabled:opacity-50"
-          >⚠ Retry</button>
+          >{{ i18n.t('sv_retry') }}</button>
           <button
             v-else
             @click.stop="handleConnect(server.ID)"
             :disabled="connecting === server.ID"
             class="text-xs px-3 py-1.5 rounded-md border border-border hover:bg-accent transition-colors disabled:opacity-50"
-          >Connect</button>
+          >{{ i18n.t('sv_connect') }}</button>
           <button
-            @click.stop="handleDelete(server.ID)"
+            @click.stop="handleDelete(server.ID, server.name)"
             class="text-xs px-2 py-1.5 border border-destructive/50 text-destructive rounded-md hover:bg-destructive/10 transition-colors"
-          >Delete</button>
+          >{{ i18n.t('sv_delete') }}</button>
         </div>
       </div>
     </div>

@@ -57,7 +57,24 @@ func (a *App) startup(ctx context.Context) {
 	})
 	a.checker.Start(ctx)
 
+	// アップデート確認（バックグラウンド）
+	go func() {
+		info, err := checkForUpdate()
+		if err != nil {
+			runtime.LogInfof(ctx, "update check skipped: %s", err)
+			return
+		}
+		if info != nil {
+			runtime.EventsEmit(ctx, "update:available", info)
+		}
+	}()
+
 	runtime.LogInfo(ctx, "App started")
+}
+
+// GetAppVersion は現在のアプリバージョンを返す
+func (a *App) GetAppVersion() string {
+	return AppVersion
 }
 
 // ─── Server CRUD ──────────────────────────────────────────────────
@@ -136,7 +153,15 @@ func (a *App) ConnectServer(id uint) error {
 			return fmt.Errorf("parse args: %w", err)
 		}
 
-		transport := mcp.NewStdioTransport(server.Command, args, onEvent)
+		// Connect 時に元ファイルから env を取得（DB には保存しない）
+		var envSlice []string
+		if envMap := importer.FindServerEnv(server.Name); len(envMap) > 0 {
+			for k, v := range envMap {
+				envSlice = append(envSlice, k+"="+v)
+			}
+		}
+
+		transport := mcp.NewStdioTransport(server.Command, args, envSlice, onEvent)
 		if err := transport.Start(ctx); err != nil {
 			cancel()
 			a.updateStatus(id, db.StatusError, err.Error())

@@ -36,48 +36,57 @@ MCPを使い始めた開発者が、サーバーの接続状態を一目で確�
 
 ## スプリント計画
 
-### Week 1: Foundation
+### Week 1: Foundation ✅
 
 **目標:** MCPサーバーに接続し、ツール一覧を取得できる状態
 
-- [ ] Wails v2 プロジェクト初期化
+- [x] Wails v2 プロジェクト初期化
 - [ ] GitHub Actions（test / lint / release）
-- [ ] SQLite スキーマ + GORM モデル
-- [ ] MCP stdio transport（子プロセスのstart/stop/restart）
-- [ ] JSON-RPC 2.0: `initialize` + `tools/list`
-- [ ] Wails bindings（GoメソッドをVueから呼べる状態）
+- [x] SQLite スキーマ + GORM モデル
+- [x] MCP stdio transport（子プロセスのstart/stop/restart）
+- [x] JSON-RPC 2.0: `initialize` + `tools/list`
+- [x] Wails bindings（GoメソッドをVueから呼べる状態）
 
-### Week 2: Core Logic
+### Week 2: Core Logic ✅
 
 **目標:** ツール実行 + 自動ヘルスチェックが動く状態
 
-- [ ] `tools/call` 実装
-- [ ] HTTP transport 実装
-- [ ] ヘルスチェックループ（30秒間隔）
-- [ ] サーキットブレーカー（3連続失敗 → degraded → 自動再接続試行）
-- [ ] Claude Desktop config importer
-- [ ] Wailsイベント（Go → Vue リアルタイム通知）
+- [x] `tools/call` 実装
+- [x] HTTP transport 実装
+- [x] ヘルスチェックループ（30秒間隔）
+- [x] サーキットブレーカー（3連続失敗 → degraded → 自動再接続試行）
+- [x] Claude Desktop config importer（~/.claude.json 優先対応含む）
+- [x] Wailsイベント（Go → Vue リアルタイム通知）
 
-### Week 3: UI
+### Week 3: UI ✅
 
 **目標:** 全機能がUIから操作できる状態
 
-- [ ] アプリシェル（サイドバー + メインコンテンツ）
-- [ ] サーバーリストビュー（ステータスバッジ + CRUD）
-- [ ] ツール一覧ビュー（サーバー → ツール ツリー）
-- [ ] ツール実行パネル（inputSchemaからフォーム自動生成 → 実行 → JSON結果）
-- [ ] イベントログビュー（リアルタイム）
-- [ ] Claude Desktop インポートUI
+- [x] アプリシェル（サイドバー + メインコンテンツ）
+- [x] サーバーリストビュー（ステータスバッジ + CRUD）
+- [x] ツール一覧ビュー（サーバー詳細ページ、スキーマベースフォーム）
+- [x] ツール実行パネル（inputSchemaからフォーム自動生成 → 実行 → JSON結果）
+- [x] イベントログビュー（リアルタイム）
+- [x] インポートUI（Claude Desktop / Claude Code / Cursor / Windsurf / カスタム）
 
-### Week 4: Polish + Distribution
+### Week 4: Polish + Distribution（進行中）
 
 **目標:** v0.1.0リリース
 
-- [ ] エラー状態・空状態のハンドリング
-- [ ] 設定画面（アプリ設定: ポート、テーマ等）
-- [ ] クロスプラットフォームビルド確認（macOS arm64/amd64, Windows）
+- [x] エラー状態・空状態のハンドリング
+- [x] 言語選択（日本語 / 英語 切り替え）
+- [x] 起動時バージョンチェック（GitHub Releases API）
+- [x] ランディングページ作成（MCPilot、Vercel デプロイ用）
+- [x] 配布・販売・アップデート戦略ドキュメント（docs/distribution.md）
+- [ ] Apple Developer 登録・コード署名・公証スクリプト整備
+- [ ] Stripe Payment Link 設定・LP に反映
+- [ ] LP をVercelにデプロイ
+- [ ] スクリーンショット撮影・LP に反映
 - [ ] README 使い方セクション + スクリーンショット
-- [ ] v0.1.0 GitHub Release
+- [ ] v0.1.0 GitHub Release（DMG アップロード）
+- [ ] ProductHunt 掲載
+- [ ] 設定画面（スコープ外に移動）
+- [ ] クロスプラットフォーム（Windows）対応（スコープ外に移動）
 
 ---
 

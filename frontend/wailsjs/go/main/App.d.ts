@@ -14,6 +14,8 @@ export function DeleteServer(arg1:number):Promise<void>;
 
 export function DisconnectServer(arg1:number):Promise<void>;
 
+export function GetAppVersion():Promise<string>;
+
 export function GetClaudeDesktopConfigPath():Promise<string>;
 
 export function GetCursorConfigPath():Promise<string>;

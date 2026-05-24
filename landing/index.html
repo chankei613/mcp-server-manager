@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCPilot — Visual Client for MCP Servers</title>
+  <meta name="description" content="Connect, inspect, and test any MCP server from a clean desktop UI. Import from Claude, Cursor, or Windsurf in one click." />
+  <meta property="og:title" content="MCPilot — Visual Client for MCP Servers" />
+  <meta property="og:description" content="Connect, inspect, and test any MCP server from a clean desktop UI." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --fg: #0f0f0f;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #6366f1;
+      --accent-light: #eef2ff;
+      --accent-dark: #4f46e5;
+      --green: #10b981;
+      --card: #f9fafb;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.3px;
+    }
+
+    .nav-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 9px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,102,241,0.35); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--fg);
+      border: 1.5px solid var(--border);
+    }
+    .btn-outline:hover { background: var(--card); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      padding: 9px 14px;
+    }
+    .btn-ghost:hover { color: var(--fg); }
+
+    .lang-btn {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.3px;
+    }
+    .lang-btn:hover { color: var(--fg); border-color: var(--fg); }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 80px 24px 64px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      letter-spacing: 0.2px;
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.08;
+      color: var(--fg);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 20px;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-large {
+      padding: 14px 28px;
+      font-size: 16px;
+      border-radius: 12px;
+    }
+
+    .price-note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 14px;
+    }
+
+    /* ── Screenshot ── */
+    .screenshot-wrap {
+      max-width: 900px;
+      margin: 56px auto 0;
+      padding: 0 24px;
+    }
+
+    .screenshot {
+      background: linear-gradient(135deg, #1e1e2e 0%, #2d2d3f 100%);
+      border-radius: 16px;
+      border: 1px solid #3a3a4f;
+      aspect-ratio: 16/10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
+    .screenshot-inner { display: flex; width: 100%; height: 100%; }
+
+    .screenshot-sidebar {
+      width: 200px;
+      background: #161622;
+      border-right: 1px solid #2a2a3a;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .ss-header {
+      font-size: 11px;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .ss-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .ss-item.active { background: rgba(99,102,241,0.2); }
+    .ss-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .ss-label { font-size: 12px; color: #d1d5db; }
+    .ss-label.active-label { color: #a5b4fc; }
+
+    .screenshot-main {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ss-tool-name { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: #f3f4f6; }
+    .ss-tool-desc { font-family: 'Inter', sans-serif; font-size: 12px; color: #9ca3af; }
+
+    .ss-field {
+      background: #1e1e2e;
+      border: 1px solid #2a2a3a;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .ss-field-label { font-family: 'Inter', sans-serif; font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .ss-field-value { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #a5b4fc; }
+
+    .ss-btn {
+      background: #6366f1;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+      margin-top: auto;
+    }
+
+    /* ── Integrations ── */
+    .integrations {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      text-align: center;
+    }
+
+    .integrations p { font-size: 12px; color: var(--muted); margin-bottom: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; }
+
+    .integration-logos { display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap; }
+
+    .integration-logo { font-size: 14px; font-weight: 600; color: var(--muted); display: flex; align-items: center; gap: 6px; transition: color 0.15s; }
+    .integration-logo:hover { color: var(--fg); }
+
+    /* ── Section ── */
+    .section { max-width: 960px; margin: 0 auto; padding: 80px 24px; }
+
+    .section-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 12px; }
+
+    .section-title { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; line-height: 1.15; }
+
+    .section-sub { font-size: 18px; color: var(--muted); max-width: 520px; line-height: 1.6; }
+
+    /* ── Features ── */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 48px; }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .feature-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+    .feature-icon { width: 44px; height: 44px; background: var(--accent-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 20px; }
+    .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.3px; }
+    .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+    /* ── Steps ── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; margin-top: 48px; }
+    .step { display: flex; flex-direction: column; gap: 12px; }
+    .step-num { width: 36px; height: 36px; background: var(--fg); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+    .step h3 { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+    .step p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+    .step-code { background: #f3f4f6; border-radius: 8px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--fg); margin-top: 4px; }
+
+    /* ── Pricing ── */
+    .pricing-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 480px;
+      margin: 48px auto 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .pricing-wrap::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent), #8b5cf6); }
+    .pricing-badge { display: inline-block; background: var(--green); color: white; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 20px; letter-spacing: 0.3px; }
+    .pricing-price { font-size: 64px; font-weight: 800; letter-spacing: -3px; line-height: 1; margin-bottom: 4px; }
+    .pricing-price sup { font-size: 28px; font-weight: 700; letter-spacing: 0; vertical-align: super; }
+    .pricing-desc { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+    .pricing-features { list-style: none; margin-bottom: 32px; text-align: left; display: flex; flex-direction: column; gap: 12px; }
+    .pricing-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .check { width: 20px; height: 20px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .check svg { width: 11px; height: 11px; stroke: var(--green); stroke-width: 2.5; }
+
+    /* ── Footer ── */
+    footer { border-top: 1px solid var(--border); padding: 32px 24px; display: flex; align-items: center; justify-content: space-between; max-width: 960px; margin: 0 auto; flex-wrap: wrap; gap: 16px; }
+    .footer-left { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--muted); transition: color 0.15s; }
+    .footer-links a:hover { color: var(--fg); }
+
+    .divider { border: none; border-top: 1px solid var(--border); }
+
+    @media (max-width: 640px) {
+      .hero h1 { letter-spacing: -1px; }
+      .pricing-wrap { padding: 32px 24px; }
+      footer { flex-direction: column; align-items: flex-start; }
+      .nav-actions .btn-ghost { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    MCPilot
+  </div>
+  <div class="nav-actions">
+    <a href="#features" class="btn btn-ghost" data-i18n="nav_features">Features</a>
+    <a href="#pricing" class="btn btn-ghost" data-i18n="nav_pricing">Pricing</a>
+    <a href="https://github.com/chankei613/mcp-server-manager" target="_blank" class="btn btn-outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.164 6.839 9.489.5.09.682-.218.682-.484 0-.236-.009-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.645.35-1.085.636-1.335-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.337 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      GitHub
+    </a>
+    <button class="lang-btn" id="langToggle" onclick="toggleLang()">JA</button>
+    <a href="#pricing" class="btn btn-primary" data-i18n="nav_cta">Get MCPilot — $9</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    <span data-i18n="badge">Built for MCP developers</span>
+  </div>
+  <h1 data-i18n="hero_h1_html">The <span>visual client</span><br>for MCP Servers</h1>
+  <p class="hero-sub" data-i18n="hero_sub">
+    Connect, inspect, and test any MCP server from a native macOS app.
+    Import your config from Claude, Cursor, or Windsurf in one click.
+  </p>
+  <div class="hero-actions">
+    <a href="#pricing" class="btn btn-primary btn-large" data-i18n="hero_cta_buy">Download MCPilot — $9</a>
+  </div>
+  <p class="price-note" data-i18n="hero_note">macOS · One-time purchase · No subscription</p>
+</section>
+
+<!-- Screenshot (UI mockup) -->
+<div class="screenshot-wrap">
+  <div class="screenshot">
+    <div class="screenshot-inner">
+      <div class="screenshot-sidebar">
+        <div class="ss-header">Servers</div>
+        <div class="ss-item active"><div class="ss-dot" style="background:#10b981"></div><span class="ss-label active-label">youtube</span></div>
+        <div class="ss-item"><div class="ss-dot" style="background:#10b981"></div><span class="ss-label">filesystem</span></div>
+        <div class="ss-item"><div class="ss-dot" style="background:#6b7280"></div><span class="ss-label">github</span></div>
+        <div class="ss-item"><div class="ss-dot" style="background:#6b7280"></div><span class="ss-label">puppeteer</span></div>
+        <div style="border-top:1px solid #2a2a3a;margin:8px 0;"></div>
+        <div class="ss-header" style="margin-bottom:4px;">Tools (12)</div>
+        <div class="ss-item active"><span class="ss-label active-label" style="font-size:11px;">searchVideos</span></div>
+        <div class="ss-item"><span class="ss-label" style="font-size:11px;">getTranscripts</span></div>
+        <div class="ss-item"><span class="ss-label" style="font-size:11px;">getVideoDetails</span></div>
+        <div class="ss-item"><span class="ss-label" style="font-size:11px;">getTrending</span></div>
+      </div>
+      <div class="screenshot-main">
+        <div><div class="ss-tool-name">searchVideos</div><div class="ss-tool-desc">Search YouTube videos by keyword, filter by date, duration, and more.</div></div>
+        <div class="ss-field"><div class="ss-field-label">query <span style="color:#f87171;font-size:9px">required · string</span></div><div class="ss-field-value">mcp server tutorial</div></div>
+        <div style="display:flex;gap:8px;">
+          <div class="ss-field" style="flex:1"><div class="ss-field-label">maxResults · number</div><div class="ss-field-value">10</div></div>
+          <div class="ss-field" style="flex:1"><div class="ss-field-label">order · enum</div><div class="ss-field-value">relevance</div></div>
+        </div>
+        <div class="ss-btn">▶  Execute</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Integrations -->
+<div class="integrations" style="margin-top:48px;">
+  <p data-i18n="integrations_label">Works with your existing MCP config from</p>
+  <div class="integration-logos">
+    <span class="integration-logo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>Claude Desktop</span>
+    <span class="integration-logo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Claude Code</span>
+    <span class="integration-logo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Cursor</span>
+    <span class="integration-logo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Windsurf</span>
+    <span class="integration-logo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span data-i18n="integrations_any">Any MCP server</span></span>
+  </div>
+</div>
+
+<!-- Features -->
+<section class="section" id="features">
+  <div class="section-label" data-i18n="features_label">Features</div>
+  <h2 class="section-title" data-i18n="features_title">Everything you need to<br>work with MCP</h2>
+  <p class="section-sub" data-i18n="features_sub">Stop guessing what your MCP server does. Connect and explore it visually.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🔌</div>
+      <h3 data-i18n="f1_title">Connect in seconds</h3>
+      <p data-i18n="f1_body">Supports both <strong>stdio</strong> (local process) and <strong>HTTP</strong> transports. Import your config from Claude, Cursor, or Windsurf with one click — no manual setup.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧪</div>
+      <h3 data-i18n="f2_title">Test tools visually</h3>
+      <p data-i18n="f2_body">Every tool gets a generated form based on its JSON schema. Fill in fields with descriptions, types, and required indicators — no more hand-writing JSON.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <h3 data-i18n="f3_title">Real-time debug log</h3>
+      <p data-i18n="f3_body">See every server event, stderr output, and error in real time. When something breaks, you know exactly why — not just a generic connection error.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3 data-i18n="f4_title">Instant reconnect</h3>
+      <p data-i18n="f4_body">Health checker monitors connections in the background. When a server drops, MCPilot detects it immediately and lets you retry with one click.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔐</div>
+      <h3 data-i18n="f5_title">Secure env handling</h3>
+      <p data-i18n="f5_body">API keys stay in your config files — never stored in a database. MCPilot reads them at connect time and passes them directly to the process.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🗂️</div>
+      <h3 data-i18n="f6_title">Manage all your servers</h3>
+      <p data-i18n="f6_body">One place to see every MCP server across all your tools. Add, edit, and delete servers. Connect or disconnect individually with a single toggle.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- How it works -->
+<section class="section">
+  <div class="section-label" data-i18n="how_label">How it works</div>
+  <h2 class="section-title" data-i18n="how_title">Up and running<br>in 3 steps</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3 data-i18n="s1_title">Import your config</h3>
+      <p data-i18n="s1_body">Select your tool (Claude, Cursor, Windsurf) and MCPilot imports all your MCP servers automatically.</p>
+      <div class="step-code">↓ Import from Claude Code</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3 data-i18n="s2_title">Connect a server</h3>
+      <p data-i18n="s2_body">Click Connect. MCPilot starts the process, initializes the MCP session, and lists all available tools.</p>
+      <div class="step-code">● Connected — 12 tools loaded</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3 data-i18n="s3_title">Execute any tool</h3>
+      <p data-i18n="s3_body">Pick a tool, fill in the form, and hit Execute. See the full JSON response instantly.</p>
+      <div class="step-code">▶  Execute → 200 OK</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- Pricing -->
+<section class="section" id="pricing">
+  <div style="text-align:center;">
+    <div class="section-label" data-i18n="pricing_label">Pricing</div>
+    <h2 class="section-title" data-i18n="pricing_title">Simple, honest pricing</h2>
+    <p class="section-sub" style="margin:0 auto;" data-i18n="pricing_sub">One-time purchase. No subscription. Updates included.</p>
+  </div>
+
+  <div class="pricing-wrap">
+    <div class="pricing-badge" data-i18n="pricing_badge">One-time purchase</div>
+    <div class="pricing-price"><sup>$</sup>9</div>
+    <p class="pricing-desc" data-i18n="pricing_desc">Pay once, own it forever. Free updates.</p>
+
+    <ul class="pricing-features">
+      <li><div class="check"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg></div><span data-i18n="pf1">Native macOS app (Apple Silicon + Intel)</span></li>
+      <li><div class="check"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg></div><span data-i18n="pf2">stdio &amp; HTTP transport support</span></li>
+      <li><div class="check"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg></div><span data-i18n="pf3">Import from Claude, Cursor, Windsurf</span></li>
+      <li><div class="check"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg></div><span data-i18n="pf4">Schema-based tool execution forms</span></li>
+      <li><div class="check"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg></div><span data-i18n="pf5">Real-time event &amp; error log</span></li>
+      <li><div class="check"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg></div><span data-i18n="pf6">All future updates included</span></li>
+    </ul>
+
+    <a href="YOUR_STRIPE_PAYMENT_LINK" class="btn btn-primary btn-large" style="width:100%;justify-content:center;" data-i18n="pricing_btn">
+      Buy MCPilot — $9
+    </a>
+    <p style="font-size:12px;color:var(--muted);margin-top:12px;" data-i18n="pricing_secure">Secure checkout via Stripe · macOS 12+</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-left">
+    <div class="nav-logo-icon" style="width:22px;height:22px;border-radius:5px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    MCPilot
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/chankei613/mcp-server-manager" target="_blank">GitHub</a>
+    <a href="mailto:chankei613@gmail.com" data-i18n="footer_contact">Contact</a>
+  </div>
+</footer>
+
+<script>
+const T = {
+  en: {
+    nav_features: 'Features',
+    nav_pricing: 'Pricing',
+    nav_cta: 'Get MCPilot — $9',
+    badge: 'Built for MCP developers',
+    hero_h1_html: 'The <span>visual client</span><br>for MCP Servers',
+    hero_sub: 'Connect, inspect, and test any MCP server from a native macOS app. Import your config from Claude, Cursor, or Windsurf in one click.',
+    hero_cta_buy: 'Download MCPilot — $9',
+    hero_note: 'macOS · One-time purchase · No subscription',
+    integrations_label: 'Works with your existing MCP config from',
+    integrations_any: 'Any MCP server',
+    features_label: 'Features',
+    features_title: 'Everything you need to<br>work with MCP',
+    features_sub: 'Stop guessing what your MCP server does. Connect and explore it visually.',
+    f1_title: 'Connect in seconds',
+    f1_body: 'Supports both <strong>stdio</strong> (local process) and <strong>HTTP</strong> transports. Import your config from Claude, Cursor, or Windsurf with one click — no manual setup.',
+    f2_title: 'Test tools visually',
+    f2_body: 'Every tool gets a generated form based on its JSON schema. Fill in fields with descriptions, types, and required indicators — no more hand-writing JSON.',
+    f3_title: 'Real-time debug log',
+    f3_body: 'See every server event, stderr output, and error in real time. When something breaks, you know exactly why — not just a generic connection error.',
+    f4_title: 'Instant reconnect',
+    f4_body: 'Health checker monitors connections in the background. When a server drops, MCPilot detects it immediately and lets you retry with one click.',
+    f5_title: 'Secure env handling',
+    f5_body: 'API keys stay in your config files — never stored in a database. MCPilot reads them at connect time and passes them directly to the process.',
+    f6_title: 'Manage all your servers',
+    f6_body: 'One place to see every MCP server across all your tools. Add, edit, and delete servers. Connect or disconnect individually with a single toggle.',
+    how_label: 'How it works',
+    how_title: 'Up and running<br>in 3 steps',
+    s1_title: 'Import your config',
+    s1_body: 'Select your tool (Claude, Cursor, Windsurf) and MCPilot imports all your MCP servers automatically.',
+    s2_title: 'Connect a server',
+    s2_body: 'Click Connect. MCPilot starts the process, initializes the MCP session, and lists all available tools.',
+    s3_title: 'Execute any tool',
+    s3_body: 'Pick a tool, fill in the form, and hit Execute. See the full JSON response instantly.',
+    pricing_label: 'Pricing',
+    pricing_title: 'Simple, honest pricing',
+    pricing_sub: 'One-time purchase. No subscription. Updates included.',
+    pricing_badge: 'One-time purchase',
+    pricing_desc: 'Pay once, own it forever. Free updates.',
+    pf1: 'Native macOS app (Apple Silicon + Intel)',
+    pf2: 'stdio & HTTP transport support',
+    pf3: 'Import from Claude, Cursor, Windsurf',
+    pf4: 'Schema-based tool execution forms',
+    pf5: 'Real-time event & error log',
+    pf6: 'All future updates included',
+    pricing_btn: 'Buy MCPilot — $9',
+    pricing_secure: 'Secure checkout via Stripe · macOS 12+',
+    footer_contact: 'Contact',
+  },
+  ja: {
+    nav_features: '機能',
+    nav_pricing: '料金',
+    nav_cta: 'MCPilotを買う — $9',
+    badge: 'MCP開発者のために作られたツール',
+    hero_h1_html: 'MCP サーバーの<br><span>ビジュアルクライアント</span>',
+    hero_sub: 'ネイティブ macOS アプリから任意のMCPサーバーに接続・検査・テストができます。Claude、Cursor、Windsurf の設定をワンクリックでインポート。',
+    hero_cta_buy: 'MCPilotをダウンロード — $9',
+    hero_note: 'macOS · 買い切り · サブスクなし',
+    integrations_label: '既存のMCP設定からインポートできます',
+    integrations_any: '任意のMCPサーバー',
+    features_label: '機能',
+    features_title: 'MCPを扱うために<br>必要な機能がすべて揃っています',
+    features_sub: 'MCPサーバーが何をするのか、もう推測しなくていい。接続してビジュアルで確かめましょう。',
+    f1_title: '数秒で接続',
+    f1_body: '<strong>stdio</strong>（ローカルプロセス）と<strong>HTTP</strong>の両方に対応。Claude・Cursor・Windsurf の設定をワンクリックでインポート。手動設定不要。',
+    f2_title: 'ツールをビジュアルでテスト',
+    f2_body: 'JSONスキーマに基づいてフォームを自動生成。フィールドの説明・型・必須項目のインジケーターを見ながら入力できます。もう手打ちのJSONは不要です。',
+    f3_title: 'リアルタイムデバッグログ',
+    f3_body: 'サーバーイベント・stderr出力・エラーをリアルタイムで確認。何かが壊れたとき、「接続エラー」ではなく正確な原因がわかります。',
+    f4_title: '即時再接続',
+    f4_body: 'ヘルスチェッカーがバックグラウンドで接続を監視。サーバーが落ちたらすぐに検知し、ワンクリックで再接続できます。',
+    f5_title: '安全なenv管理',
+    f5_body: 'APIキーは設定ファイルに残ったまま、データベースには保存されません。接続時に読み取り、プロセスに直接渡します。',
+    f6_title: 'サーバーを一元管理',
+    f6_body: 'すべてのMCPサーバーを1か所で管理。追加・編集・削除、接続・切断もトグル一つで操作できます。',
+    how_label: '使い方',
+    how_title: '3ステップで<br>すぐに使えます',
+    s1_title: '設定をインポート',
+    s1_body: 'ツール（Claude・Cursor・Windsurf）を選ぶと、MCPサーバーの設定を自動でインポートします。',
+    s2_title: 'サーバーに接続',
+    s2_body: 'Connectをクリック。MCPilotがプロセスを起動し、MCPセッションを初期化して、利用可能なツールを一覧表示します。',
+    s3_title: 'ツールを実行',
+    s3_body: 'ツールを選んでフォームに入力し、Executeを押す。JSONレスポンスが即座に表示されます。',
+    pricing_label: '料金',
+    pricing_title: 'シンプルで明快な料金',
+    pricing_sub: '買い切り。サブスクなし。アップデートも含まれます。',
+    pricing_badge: '買い切り',
+    pricing_desc: '一度購入すれば永久に使えます。無料アップデート付き。',
+    pf1: 'macOS ネイティブアプリ（Apple Silicon + Intel）',
+    pf2: 'stdio & HTTP トランスポート対応',
+    pf3: 'Claude・Cursor・Windsurf からインポート',
+    pf4: 'スキーマベースのツール実行フォーム',
+    pf5: 'リアルタイムイベント & エラーログ',
+    pf6: '今後のアップデートもすべて含む',
+    pricing_btn: 'MCPilotを購入 — $9',
+    pricing_secure: 'Stripe で安全に決済 · macOS 12+',
+    footer_contact: 'お問い合わせ',
+  }
+}
+
+let currentLang = localStorage.getItem('lp_lang') || 'en'
+
+function applyLang(lang) {
+  const dict = T[lang]
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n')
+    if (!dict[key]) return
+    el.innerHTML = dict[key]
+  })
+  document.getElementById('langToggle').textContent = lang === 'en' ? 'JA' : 'EN'
+  document.documentElement.lang = lang
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'ja' : 'en'
+  localStorage.setItem('lp_lang', currentLang)
+  applyLang(currentLang)
+}
+
+applyLang(currentLang)
+</script>
+</body>
+</html>

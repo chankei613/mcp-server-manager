@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useServersStore } from '@/stores/servers'
+import { useI18nStore } from '@/stores/i18n'
 
 const store = useServersStore()
 const router = useRouter()
+const i18n = useI18nStore()
 
 type Method = 'claude-desktop' | 'claude-code' | 'cursor' | 'windsurf' | 'custom'
 
@@ -45,7 +47,7 @@ function currentPath(): string {
 async function handleImport() {
   const path = currentPath()
   if (!path) {
-    error.value = 'ファイルパスが指定されていません'
+    error.value = i18n.t('iv_error_no_file')
     return
   }
   importing.value = true
@@ -65,29 +67,31 @@ function goToServers() {
   router.push('/servers')
 }
 
-const methodLabels: Record<Method, { title: string; desc: string }> = {
-  'claude-desktop': { title: 'Claude Desktop', desc: 'Claude Desktop アプリで設定したサーバーを取り込みます' },
-  'claude-code':    { title: 'Claude Code', desc: '~/.claude.json（または ~/.claude/claude_desktop_config.json）を取り込みます' },
-  'cursor':         { title: 'Cursor', desc: '~/.cursor/mcp.json を取り込みます' },
-  'windsurf':       { title: 'Windsurf', desc: '~/.codeium/windsurf/mcp_config.json を取り込みます' },
-  'custom':         { title: 'カスタム JSON ファイル', desc: 'ファイルを直接指定して取り込みます' },
+type MethodKey = 'iv_method_claude_desktop' | 'iv_method_claude_code' | 'iv_method_cursor' | 'iv_method_windsurf' | 'iv_method_custom'
+
+const methodTitleKey: Record<Method, MethodKey> = {
+  'claude-desktop': 'iv_method_claude_desktop',
+  'claude-code':    'iv_method_claude_code',
+  'cursor':         'iv_method_cursor',
+  'windsurf':       'iv_method_windsurf',
+  'custom':         'iv_method_custom',
 }
+
+const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.value]))
 </script>
 
 <template>
   <div class="max-w-2xl mx-auto p-6">
     <!-- Header -->
     <div class="mb-6">
-      <h2 class="text-xl font-semibold text-foreground">MCP サーバーをインポート</h2>
-      <p class="text-sm text-muted-foreground mt-1">
-        使用中のツールを選択して、登録済みの MCP サーバー設定をまとめて取り込みます。
-      </p>
+      <h2 class="text-xl font-semibold text-foreground">{{ i18n.t('iv_title') }}</h2>
+      <p class="text-sm text-muted-foreground mt-1">{{ i18n.t('iv_desc') }}</p>
     </div>
 
     <!-- Step 1: Method selection -->
     <div class="mb-5">
       <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-        Step 1 — 取り込み元を選択
+        {{ i18n.t('iv_step1') }}
       </p>
 
       <div class="space-y-2">
@@ -109,9 +113,9 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
           </span>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium" :class="selectedMethod === 'claude-desktop' ? 'text-blue-900' : 'text-foreground'">
-              Claude Desktop
+              {{ i18n.t('iv_method_claude_desktop') }}
             </p>
-            <p class="text-xs text-muted-foreground">Claude Desktop アプリで設定したサーバーを取り込みます</p>
+            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_claude_desktop_desc') }}</p>
           </div>
         </label>
 
@@ -133,9 +137,9 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
           </span>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium" :class="selectedMethod === 'claude-code' ? 'text-blue-900' : 'text-foreground'">
-              Claude Code
+              {{ i18n.t('iv_method_claude_code') }}
             </p>
-            <p class="text-xs text-muted-foreground">~/.claude.json（または ~/.claude/claude_desktop_config.json）を取り込みます</p>
+            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_claude_code_desc') }}</p>
           </div>
         </label>
 
@@ -156,8 +160,8 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
             </svg>
           </span>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium" :class="selectedMethod === 'cursor' ? 'text-blue-900' : 'text-foreground'">Cursor</p>
-            <p class="text-xs text-muted-foreground">~/.cursor/mcp.json を取り込みます</p>
+            <p class="text-sm font-medium" :class="selectedMethod === 'cursor' ? 'text-blue-900' : 'text-foreground'">{{ i18n.t('iv_method_cursor') }}</p>
+            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_cursor_desc') }}</p>
           </div>
         </label>
 
@@ -178,8 +182,8 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
             </svg>
           </span>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium" :class="selectedMethod === 'windsurf' ? 'text-blue-900' : 'text-foreground'">Windsurf</p>
-            <p class="text-xs text-muted-foreground">~/.codeium/windsurf/mcp_config.json を取り込みます</p>
+            <p class="text-sm font-medium" :class="selectedMethod === 'windsurf' ? 'text-blue-900' : 'text-foreground'">{{ i18n.t('iv_method_windsurf') }}</p>
+            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_windsurf_desc') }}</p>
           </div>
         </label>
 
@@ -200,8 +204,8 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
             </svg>
           </span>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium" :class="selectedMethod === 'custom' ? 'text-blue-900' : 'text-foreground'">カスタム JSON ファイル</p>
-            <p class="text-xs text-muted-foreground">ファイルを直接指定して取り込みます</p>
+            <p class="text-sm font-medium" :class="selectedMethod === 'custom' ? 'text-blue-900' : 'text-foreground'">{{ i18n.t('iv_method_custom') }}</p>
+            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_custom_desc') }}</p>
           </div>
         </label>
       </div>
@@ -211,19 +215,19 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
     <div class="mb-6 p-4 border border-border rounded-lg bg-white space-y-3">
       <div>
         <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
-          Step 2 — 読み込み元ファイルの確認
+          {{ i18n.t('iv_step2') }}
         </p>
         <p class="text-xs text-muted-foreground">
-          以下のパスのファイルから読み込みます。パスは<strong>あなたの Mac のユーザー名</strong>を含むため人によって異なりますが、アプリが自動で設定します。違う場合は編集してください。
+          {{ i18n.t('iv_step2_desc_pre') }}<strong>{{ i18n.t('iv_step2_desc_bold') }}</strong>{{ i18n.t('iv_step2_desc_post') }}
         </p>
       </div>
 
       <!-- Claude Desktop -->
       <template v-if="selectedMethod === 'claude-desktop'">
         <code class="block w-full px-3 py-2 text-xs bg-gray-100 border border-border rounded-md text-gray-700 break-all leading-relaxed select-all">
-          {{ claudeDesktopPath || '検出中…' }}
+          {{ claudeDesktopPath || i18n.t('iv_detecting') }}
         </code>
-        <p class="text-xs text-gray-500">自動検出されたパスです。変更は不要です。</p>
+        <p class="text-xs text-gray-500">{{ i18n.t('iv_path_hint') }}</p>
       </template>
 
       <!-- Claude Code -->
@@ -235,7 +239,8 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
         />
         <code class="block text-xs text-gray-500 break-all leading-relaxed px-1">{{ claudeCodePath }}</code>
         <p class="text-xs text-gray-500">
-          <code class="bg-gray-100 px-1 rounded">~/.claude.json</code> が優先されます。なければ <code class="bg-gray-100 px-1 rounded">~/.claude/claude_desktop_config.json</code> を使います。手動管理のファイルを使う場合はパスを変更してください。
+          <code class="bg-gray-100 px-1 rounded">~/.claude.json</code>
+          {{ i18n.t('iv_claude_code_hint', '~/.claude.json', '~/.claude/claude_desktop_config.json') }}
         </p>
       </template>
 
@@ -247,7 +252,7 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
           class="w-full px-3 py-2 text-sm bg-input border border-border rounded-md font-mono focus:outline-none focus:ring-1 focus:ring-ring"
         />
         <code class="block text-xs text-gray-500 break-all leading-relaxed px-1">{{ cursorPath }}</code>
-        <p class="text-xs text-gray-500">プロジェクトごとの <code class="bg-gray-100 px-1 rounded">.cursor/mcp.json</code> を使う場合はパスを変更してください。</p>
+        <p class="text-xs text-gray-500">{{ i18n.t('iv_cursor_hint') }}</p>
       </template>
 
       <!-- Windsurf -->
@@ -272,48 +277,46 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
             @click="handlePickFile"
             class="px-3 py-2 text-sm border border-border rounded-md hover:bg-accent transition-colors shrink-0"
           >
-            Browse…
+            {{ i18n.t('iv_browse') }}
           </button>
         </div>
         <code v-if="customPath" class="block text-xs text-gray-500 break-all leading-relaxed px-1">{{ customPath }}</code>
         <p class="text-xs text-gray-500">
-          <code class="bg-gray-100 px-1 rounded">mcpServers</code> キーを含む JSON ファイルであれば取り込めます。
+          <code class="bg-gray-100 px-1 rounded">mcpServers</code> — {{ i18n.t('iv_custom_hint') }}
         </p>
       </template>
     </div>
 
-    <!-- Loading feedback (ボタン上) -->
+    <!-- Loading feedback -->
     <div v-if="importing" class="mb-4 p-4 border border-blue-200 bg-blue-50 rounded-xl flex items-start gap-3">
       <svg class="w-5 h-5 text-blue-600 animate-spin shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 12a9 9 0 1 1-6.219-8.56" />
       </svg>
       <div class="min-w-0">
-        <p class="text-sm font-medium text-blue-900">インポート中…</p>
+        <p class="text-sm font-medium text-blue-900">{{ i18n.t('iv_importing') }}</p>
         <p class="text-xs text-blue-700 font-mono mt-1 break-all">{{ currentPath() }}</p>
       </div>
     </div>
 
-    <!-- Error (ボタン上) -->
+    <!-- Error -->
     <div v-if="error" class="mb-4 p-4 border border-red-200 bg-red-50 rounded-xl text-sm text-red-800">
-      <p class="font-semibold">エラーが発生しました</p>
+      <p class="font-semibold">{{ i18n.t('iv_error_title') }}</p>
       <p class="mt-1 font-mono text-xs break-all">{{ error }}</p>
-      <p v-if="error.includes('no such file')" class="mt-2 text-xs text-red-700">
-        ヒント: ファイルが存在しないパスです。Step 2 でパスを確認・修正してください。
-      </p>
+      <p v-if="error.includes('no such file')" class="mt-2 text-xs text-red-700">{{ i18n.t('iv_hint_no_file') }}</p>
     </div>
 
-    <!-- Result (ボタン上) -->
+    <!-- Result -->
     <div v-if="result && !importing" class="mb-4 rounded-xl border overflow-hidden">
       <!-- 0件: mcpServers なし -->
       <template v-if="!result.imported?.length && !result.skipped?.length && !result.errors?.length">
         <div class="p-4 bg-yellow-50 border-b border-yellow-200">
-          <p class="text-sm font-semibold text-yellow-900">MCP サーバーが見つかりませんでした</p>
+          <p class="text-sm font-semibold text-yellow-900">{{ i18n.t('iv_no_servers_title') }}</p>
         </div>
         <div class="p-4 bg-white space-y-2 text-sm text-gray-700">
-          <p>ファイルは読めましたが <code class="bg-gray-100 px-1 rounded text-xs">mcpServers</code> の設定がありません。</p>
-          <p class="text-xs text-gray-500">読み込んだファイル:</p>
+          <p>{{ i18n.t('iv_no_servers_desc') }}</p>
+          <p class="text-xs text-gray-500">{{ i18n.t('iv_read_file') }}</p>
           <p class="text-xs font-mono text-gray-700 break-all bg-gray-50 px-2 py-1 rounded">{{ lastImportedPath }}</p>
-          <p class="text-xs text-gray-500">「カスタム JSON ファイル」で別のパスを指定してお試しください。</p>
+          <p class="text-xs text-gray-500">{{ i18n.t('iv_try_custom') }}</p>
         </div>
       </template>
 
@@ -321,7 +324,7 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
       <template v-else>
         <div class="p-4 border-b" :class="result.imported?.length ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'">
           <p class="text-sm font-semibold" :class="result.imported?.length ? 'text-green-900' : 'text-gray-700'">
-            {{ result.imported?.length ? 'インポート完了' : 'インポート済み（変更なし）' }}
+            {{ result.imported?.length ? i18n.t('iv_import_complete') : i18n.t('iv_import_noop') }}
           </p>
           <p class="text-xs font-mono mt-1 break-all" :class="result.imported?.length ? 'text-green-700' : 'text-gray-500'">
             {{ lastImportedPath }}
@@ -329,7 +332,7 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
         </div>
         <div class="p-4 bg-white space-y-3">
           <div v-if="result.imported?.length" class="space-y-1">
-            <p class="text-xs font-semibold text-green-700 uppercase tracking-wide">追加 {{ result.imported.length }}件</p>
+            <p class="text-xs font-semibold text-green-700 uppercase tracking-wide">{{ i18n.t('iv_added', result.imported.length) }}</p>
             <ul class="space-y-1">
               <li v-for="name in result.imported" :key="name" class="flex items-center gap-2">
                 <span class="text-green-600 font-bold text-sm">✓</span>
@@ -339,7 +342,7 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
           </div>
 
           <div v-if="result.skipped?.length" class="space-y-1">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">スキップ（登録済み）{{ result.skipped.length }}件</p>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ i18n.t('iv_skipped_count', result.skipped.length) }}</p>
             <ul class="space-y-1">
               <li v-for="name in result.skipped" :key="name" class="flex items-center gap-2 text-gray-500">
                 <span class="text-sm">—</span>
@@ -349,7 +352,7 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
           </div>
 
           <div v-if="result.errors?.length" class="space-y-1">
-            <p class="text-xs font-semibold text-red-600 uppercase tracking-wide">エラー {{ result.errors.length }}件</p>
+            <p class="text-xs font-semibold text-red-600 uppercase tracking-wide">{{ i18n.t('iv_errors_count', result.errors.length) }}</p>
             <ul class="space-y-1">
               <li v-for="err in result.errors" :key="err" class="flex items-start gap-2 text-red-700">
                 <span class="shrink-0 text-sm">✗</span>
@@ -363,7 +366,7 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
             @click="goToServers"
             class="w-full py-2 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
           >
-            → Servers 画面で確認する
+            {{ i18n.t('iv_go_servers') }}
           </button>
         </div>
       </template>
@@ -383,7 +386,7 @@ const methodLabels: Record<Method, { title: string; desc: string }> = {
       <svg v-else class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 12a9 9 0 1 1-6.219-8.56" />
       </svg>
-      {{ importing ? 'インポート中…' : `${methodLabels[selectedMethod].title} からインポート` }}
+      {{ importing ? i18n.t('iv_importing') : i18n.t('iv_import_btn', currentMethodTitle) }}
     </button>
   </div>
 </template>
