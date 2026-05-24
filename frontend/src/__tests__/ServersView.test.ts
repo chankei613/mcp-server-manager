@@ -29,9 +29,9 @@ describe('ServersView', () => {
     expect(wrapper.text()).toContain('MCP Servers')
   })
 
-  it('shows empty state when no servers', () => {
+  it('shows onboarding when no servers', () => {
     const wrapper = mountServersView()
-    expect(wrapper.text()).toContain('No servers configured')
+    expect(wrapper.text()).toContain('MCP サーバーがまだ登録されていません')
   })
 
   it('shows add form when "+ Add Server" is clicked', async () => {

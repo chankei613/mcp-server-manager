@@ -26,8 +26,16 @@ export function GetClaudeDesktopConfigPath() {
   return window['go']['main']['App']['GetClaudeDesktopConfigPath']();
 }
 
+export function GetCursorConfigPath() {
+  return window['go']['main']['App']['GetCursorConfigPath']();
+}
+
 export function GetEvents(arg1) {
   return window['go']['main']['App']['GetEvents'](arg1);
+}
+
+export function GetLocalClaudeConfigPath() {
+  return window['go']['main']['App']['GetLocalClaudeConfigPath']();
 }
 
 export function GetServers() {
@@ -38,8 +46,16 @@ export function GetTools(arg1) {
   return window['go']['main']['App']['GetTools'](arg1);
 }
 
+export function GetWindsurfConfigPath() {
+  return window['go']['main']['App']['GetWindsurfConfigPath']();
+}
+
 export function ImportClaudeDesktopConfig(arg1) {
   return window['go']['main']['App']['ImportClaudeDesktopConfig'](arg1);
+}
+
+export function OpenFilePicker() {
+  return window['go']['main']['App']['OpenFilePicker']();
 }
 
 export function UpdateServer(arg1, arg2, arg3, arg4, arg5) {

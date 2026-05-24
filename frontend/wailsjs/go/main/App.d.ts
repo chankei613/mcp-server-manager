@@ -16,12 +16,20 @@ export function DisconnectServer(arg1:number):Promise<void>;
 
 export function GetClaudeDesktopConfigPath():Promise<string>;
 
+export function GetCursorConfigPath():Promise<string>;
+
 export function GetEvents(arg1:number):Promise<Array<db.MCPEvent>>;
+
+export function GetLocalClaudeConfigPath():Promise<string>;
 
 export function GetServers():Promise<Array<db.MCPServer>>;
 
 export function GetTools(arg1:number):Promise<Array<mcp.Tool>>;
 
+export function GetWindsurfConfigPath():Promise<string>;
+
 export function ImportClaudeDesktopConfig(arg1:string):Promise<importer.ImportResult>;
+
+export function OpenFilePicker():Promise<string>;
 
 export function UpdateServer(arg1:number,arg2:string,arg3:string,arg4:string,arg5:string):Promise<db.MCPServer>;

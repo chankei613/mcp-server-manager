@@ -7,7 +7,8 @@ import {
   ConnectServer, DisconnectServer,
   GetTools, CallTool,
   GetEvents,
-  GetClaudeDesktopConfigPath, ImportClaudeDesktopConfig,
+  GetClaudeDesktopConfigPath, GetLocalClaudeConfigPath, GetCursorConfigPath, GetWindsurfConfigPath,
+  ImportClaudeDesktopConfig, OpenFilePicker,
 } from '../../wailsjs/go/main/App'
 import { EventsOn } from '../../wailsjs/runtime/runtime'
 
@@ -82,9 +83,30 @@ export const useServersStore = defineStore('servers', () => {
   async function importClaudeDesktop(): Promise<importer.ImportResult> {
     const configPath = await GetClaudeDesktopConfigPath()
     const result = await ImportClaudeDesktopConfig(configPath)
-    // インポート後にサーバーリストをリフレッシュ
     await fetchServers()
     return result
+  }
+
+  async function importFromPath(path: string): Promise<importer.ImportResult> {
+    const result = await ImportClaudeDesktopConfig(path)
+    await fetchServers()
+    return result
+  }
+
+  async function getLocalClaudePath(): Promise<string> {
+    return GetLocalClaudeConfigPath()
+  }
+
+  async function getCursorConfigPath(): Promise<string> {
+    return GetCursorConfigPath()
+  }
+
+  async function getWindsurfConfigPath(): Promise<string> {
+    return GetWindsurfConfigPath()
+  }
+
+  async function pickFile(): Promise<string> {
+    return OpenFilePicker()
   }
 
   function subscribeToEvents() {
@@ -103,6 +125,7 @@ export const useServersStore = defineStore('servers', () => {
     servers, toolsCache, loading, error,
     fetchServers, addServer, updateServer, removeServer,
     connect, disconnect, fetchTools, callTool, fetchEvents,
-    importClaudeDesktop, subscribeToEvents,
+    importClaudeDesktop, importFromPath, getLocalClaudePath, getCursorConfigPath, getWindsurfConfigPath, pickFile,
+    subscribeToEvents,
   }
 })

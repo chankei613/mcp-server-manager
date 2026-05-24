@@ -8,6 +8,7 @@ import App from './App.vue'
 import ServersView from './pages/ServersView.vue'
 import ToolsView from './pages/ToolsView.vue'
 import EventsView from './pages/EventsView.vue'
+import ImportView from './pages/ImportView.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -16,6 +17,7 @@ const router = createRouter({
     { path: '/servers', component: ServersView },
     { path: '/servers/:id/tools', component: ToolsView },
     { path: '/servers/:id/events', component: EventsView },
+    { path: '/import', component: ImportView },
   ],
 })
 

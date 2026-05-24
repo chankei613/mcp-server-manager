@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useServersStore } from '@/stores/servers'
 
 const store = useServersStore()
 const router = useRouter()
+
+onMounted(() => {
+  store.fetchServers()
+})
 
 const showAddForm = ref(false)
 const form = ref({ name: '', transport: 'stdio', command: '', args: '[]', url: '' })
@@ -54,9 +58,6 @@ async function handleDelete(id: number) {
   if (confirm('Delete this server?')) await store.removeServer(id)
 }
 
-function openTools(id: number) {
-  router.push(`/servers/${id}/tools`)
-}
 
 async function handleImport() {
   importing.value = true
@@ -158,10 +159,70 @@ async function handleImport() {
       </div>
     </div>
 
-    <!-- Empty state -->
-    <div v-if="store.servers.length === 0" class="text-center py-16 text-muted-foreground">
-      <p class="text-sm">No servers configured.</p>
-      <p class="text-xs mt-1">Click "+ Add Server" to add an MCP server, or import from Claude Desktop.</p>
+    <!-- Empty state / Onboarding -->
+    <div v-if="store.servers.length === 0" class="max-w-xl mx-auto py-12">
+      <div class="text-center mb-8">
+        <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+          </svg>
+        </div>
+        <h3 class="text-base font-semibold text-foreground">MCP サーバーがまだ登録されていません</h3>
+        <p class="text-sm text-muted-foreground mt-1">以下の方法で MCP サーバーを追加してください</p>
+      </div>
+
+      <!-- How-to steps -->
+      <div class="space-y-3 mb-8">
+        <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-white">
+          <span class="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+          <div>
+            <p class="text-sm font-medium">既存の設定を取り込む（推奨）</p>
+            <p class="text-xs text-muted-foreground mt-0.5">
+              Claude Desktop や Claude Code を使っている場合は、設定を自動でインポートできます。
+            </p>
+            <button
+              @click="$router.push('/import')"
+              class="mt-2 text-xs text-primary font-medium hover:opacity-70 transition-opacity"
+            >→ インポートページへ</button>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-white">
+          <span class="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+          <div>
+            <p class="text-sm font-medium">手動でサーバーを追加</p>
+            <p class="text-xs text-muted-foreground mt-0.5">
+              コマンド（stdio）または URL（HTTP）でサーバーを直接登録します。
+            </p>
+            <button
+              @click="showAddForm = true"
+              class="mt-2 text-xs text-primary font-medium hover:opacity-70 transition-opacity"
+            >→ + Add Server</button>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-white">
+          <span class="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+          <div>
+            <p class="text-sm font-medium">接続してツールを確認</p>
+            <p class="text-xs text-muted-foreground mt-0.5">
+              サーバーを追加したら「Connect」を押して接続。「Browse Tools」でツール一覧とテスト実行ができます。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-3 justify-center">
+        <button
+          @click="$router.push('/import')"
+          class="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
+        >↓ 設定をインポート</button>
+        <button
+          @click="showAddForm = true"
+          class="px-4 py-2 text-sm border border-border rounded-lg hover:bg-accent transition-colors"
+        >+ 手動で追加</button>
+      </div>
     </div>
 
     <!-- Server list -->
@@ -169,38 +230,41 @@ async function handleImport() {
       <div
         v-for="server in store.servers"
         :key="server.ID"
-        class="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-accent/20 transition-colors"
+        @click="router.push(`/servers/${server.ID}/tools`)"
+        class="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-accent/20 transition-colors cursor-pointer"
       >
         <span class="w-2 h-2 rounded-full shrink-0" :class="statusColors[server.status]" />
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium truncate">{{ server.name }}</p>
-          <p class="text-xs text-muted-foreground truncate">
-            {{ server.transport }} · {{ server.command || server.url }}
-          </p>
+          <p class="text-sm font-medium">{{ server.name }}</p>
+          <p v-if="server.status === 'error' && server.last_error" class="text-xs text-red-600 truncate mt-0.5">{{ server.last_error }}</p>
         </div>
-        <span class="text-xs px-2 py-0.5 rounded-full border border-border text-muted-foreground">
-          {{ statusLabel[server.status] || server.status }}
-        </span>
         <div class="flex gap-2 shrink-0">
           <button
-            v-if="server.status !== 'connected'"
-            @click="handleConnect(server.ID)"
+            v-if="server.status === 'connecting' || connecting === server.ID"
+            disabled
+            @click.stop
+            class="text-xs px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 border border-blue-200 cursor-not-allowed"
+          >Connecting…</button>
+          <button
+            v-else-if="server.status === 'connected'"
+            @click.stop="handleDisconnect(server.ID)"
+            class="text-xs px-3 py-1.5 rounded-md bg-green-50 text-green-700 border border-green-300 hover:bg-green-100 transition-colors"
+          >● Connected</button>
+          <button
+            v-else-if="server.status === 'error'"
+            @click.stop="handleConnect(server.ID)"
             :disabled="connecting === server.ID"
-            class="text-xs px-2 py-1 border border-border rounded hover:bg-accent disabled:opacity-50"
-          >Connect</button>
+            class="text-xs px-3 py-1.5 rounded-md bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 transition-colors disabled:opacity-50"
+          >⚠ Retry</button>
           <button
             v-else
-            @click="openTools(server.ID)"
-            class="text-xs px-2 py-1 border border-green-600 text-green-400 rounded hover:bg-green-900/20"
-          >Browse Tools</button>
+            @click.stop="handleConnect(server.ID)"
+            :disabled="connecting === server.ID"
+            class="text-xs px-3 py-1.5 rounded-md border border-border hover:bg-accent transition-colors disabled:opacity-50"
+          >Connect</button>
           <button
-            v-if="server.status === 'connected'"
-            @click="handleDisconnect(server.ID)"
-            class="text-xs px-2 py-1 border border-border rounded hover:bg-accent"
-          >Disconnect</button>
-          <button
-            @click="handleDelete(server.ID)"
-            class="text-xs px-2 py-1 border border-destructive/50 text-destructive rounded hover:bg-destructive/10"
+            @click.stop="handleDelete(server.ID)"
+            class="text-xs px-2 py-1.5 border border-destructive/50 text-destructive rounded-md hover:bg-destructive/10 transition-colors"
           >Delete</button>
         </div>
       </div>

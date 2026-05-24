@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/chankei613/mcp-server-manager/internal/db"
@@ -44,6 +45,11 @@ func (a *App) startup(ctx context.Context) {
 		runtime.LogErrorf(ctx, "DB init failed: %s", err)
 		return
 	}
+
+	// 前回セッションの connected/connecting をリセット（a.clients は空のため）
+	db.DB.Model(&db.MCPServer{}).
+		Where("status IN ?", []string{string(db.StatusConnected), string(db.StatusConnecting)}).
+		Update("status", string(db.StatusDisconnected))
 
 	// ヘルスチェッカー起動
 	a.checker = health.NewChecker(func(serverID uint, eventType, message string) {
@@ -252,9 +258,59 @@ func (a *App) ImportClaudeDesktopConfig(configPath string) (*importer.ImportResu
 	if err != nil {
 		return nil, err
 	}
-	// インポート完了をVueに通知
 	runtime.EventsEmit(a.ctx, "import:complete", result)
 	return result, nil
+}
+
+// GetLocalClaudeConfigPath は ~/.claude/ 配下の MCP 設定ファイルパスを返す。
+// claude_desktop_config.json が存在すればそちらを優先する。
+func (a *App) GetLocalClaudeConfigPath() string {
+	home, _ := os.UserHomeDir()
+	candidates := []string{
+		filepath.Join(home, ".claude.json"),                              // Claude Code のメイン設定（最優先）
+		filepath.Join(home, ".claude", "claude_desktop_config.json"),
+		filepath.Join(home, ".claude", "settings.local.json"),
+		filepath.Join(home, ".claude", "settings.json"),
+	}
+	for _, p := range candidates {
+		if _, err := os.Stat(p); err == nil {
+			// mcpServers キーが含まれているか確認
+			data, err := os.ReadFile(p)
+			if err == nil && len(data) > 0 {
+				if contains := string(data); len(contains) > 0 {
+					// JSON内に mcpServers があるファイルを優先
+					if strings.Contains(contains, `"mcpServers"`) {
+						return p
+					}
+				}
+			}
+		}
+	}
+	// 見つからなければデフォルト
+	return filepath.Join(home, ".claude", "settings.json")
+}
+
+// GetCursorConfigPath は ~/.cursor/mcp.json のパスを返す
+func (a *App) GetCursorConfigPath() string {
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".cursor", "mcp.json")
+}
+
+// GetWindsurfConfigPath は ~/.codeium/windsurf/mcp_config.json のパスを返す
+func (a *App) GetWindsurfConfigPath() string {
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".codeium", "windsurf", "mcp_config.json")
+}
+
+// OpenFilePicker はOSのファイル選択ダイアログを開いて選択されたパスを返す
+func (a *App) OpenFilePicker() (string, error) {
+	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select MCP config file",
+		Filters: []runtime.FileFilter{
+			{DisplayName: "JSON Files (*.json)", Pattern: "*.json"},
+		},
+	})
+	return path, err
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────
