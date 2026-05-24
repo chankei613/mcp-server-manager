@@ -64,7 +64,7 @@ test.describe('サーバー追加フォーム', () => {
     await page.getByRole('button', { name: /Add Server/ }).click()
     await page.getByPlaceholder('my-mcp-server').fill(serverName)
     await page.getByPlaceholder('npx').fill('echo')
-    await page.getByRole('button', { name: 'Add' }).click()
+    await page.getByRole('button', { name: 'Add', exact: true }).click()
     await expect(page.getByText(serverName)).toBeVisible({ timeout: 5000 })
     // クリーンアップ: 追加したサーバーを削除
     const deleteBtn = page.locator(`text=${serverName}`).locator('../..').getByRole('button', { name: 'Delete' })
