@@ -236,12 +236,16 @@ const translations: Record<Lang, Dict> = {
   },
 }
 
+const safeStorage = typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function'
+  ? localStorage
+  : null
+
 export const useI18nStore = defineStore('i18n', () => {
-  const lang = ref<Lang>((localStorage.getItem('mcp_lang') as Lang) || 'ja')
+  const lang = ref<Lang>((safeStorage?.getItem('mcp_lang') as Lang) || 'ja')
 
   function setLang(l: Lang) {
     lang.value = l
-    localStorage.setItem('mcp_lang', l)
+    safeStorage?.setItem('mcp_lang', l)
   }
 
   function t(key: string, ...args: unknown[]): string {

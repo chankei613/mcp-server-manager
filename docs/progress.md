@@ -68,6 +68,25 @@
 
 ---
 
+## 2026-05-25
+
+### QA フェーズ完了
+
+- ✅ フロントエンドテスト全件修正（18/18 パス）
+  - `stores/i18n.ts`：`localStorage.getItem` を safe ガード（`safeStorage` 変数）でラップ → happy-dom 環境でのクラッシュ解消
+  - `ServersView.test.ts`：英語ハードコード文字列 → 日本語 i18n テキストに修正（"New Server" → "新しいサーバー" 等）
+  - `ToolsView.test.ts`：connected サーバーをストアに注入して watch トリガー → `GetTools` 呼び出し確認、ツールカウント表示 `(2)`、結果表示キー "結果" に対応
+- ✅ Go テスト全件パス（importer / mcp パッケージ）
+
+**使用Worker:** claude-sonnet-4-6
+
+**気づき・改善点:**
+- happy-dom は `localStorage` の実装が不完全（`getItem` が関数でない）。`typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function'` でガードする
+- i18n を入れたら既存テストの期待文字列が全滅する → テスト更新コストを見込んでおく
+- ToolsView の `loadTools()` は `watch({ immediate: true })` でのみ呼ばれるため、テストではストアに connected サーバーを注入する必要がある
+
+---
+
 ## 残タスク（v0.1.0 リリースまで）
 
 - [ ] Apple Developer 登録・コード署名・公証スクリプト整備
