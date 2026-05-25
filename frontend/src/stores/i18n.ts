@@ -47,7 +47,6 @@ const translations: Record<Lang, Dict> = {
     sv_retry: '⚠ 再試行',
     sv_connect: '接続',
     sv_delete: '削除',
-    sv_delete_ok: '確認',
     sv_delete_confirm: (name) => `"${name}" を削除しますか？`,
 
     // ToolsView
@@ -162,7 +161,6 @@ const translations: Record<Lang, Dict> = {
     sv_retry: '⚠ Retry',
     sv_connect: 'Connect',
     sv_delete: 'Delete',
-    sv_delete_ok: 'Sure?',
     sv_delete_confirm: (name) => `Delete "${name}"?`,
 
     // ToolsView

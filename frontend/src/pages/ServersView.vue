@@ -217,7 +217,7 @@ async function confirmDelete(id: number) {
             <button
               @click.stop="confirmDelete(server.ID)"
               class="text-xs px-2 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-            >{{ i18n.t('sv_delete_ok') }}</button>
+            >{{ i18n.lang === 'ja' ? '確認して削除' : 'Delete' }}</button>
             <button
               @click.stop="pendingDeleteId = null"
               class="text-xs px-2 py-1.5 border border-gray-300 text-gray-500 rounded-md hover:bg-gray-100 transition-colors"
