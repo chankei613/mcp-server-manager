@@ -15,7 +15,6 @@ onMounted(() => {
 const showAddForm = ref(false)
 const form = ref({ name: '', transport: 'stdio', command: '', args: '[]', url: '' })
 const connecting = ref<number | null>(null)
-const pendingDeleteId = ref<number | null>(null)
 
 const statusColors: Record<string, string> = {
   connected: 'bg-green-500',
@@ -46,14 +45,6 @@ async function handleDisconnect(id: number) {
   await store.disconnect(id)
 }
 
-function requestDelete(id: number) {
-  pendingDeleteId.value = id
-}
-
-async function confirmDelete(id: number) {
-  pendingDeleteId.value = null
-  await store.removeServer(id)
-}
 </script>
 
 <template>
@@ -207,22 +198,6 @@ async function confirmDelete(id: number) {
             class="text-xs px-3 py-1.5 rounded-md border border-border hover:bg-accent transition-colors disabled:opacity-50"
           >{{ i18n.t('sv_connect') }}</button>
 
-          <!-- Delete: 2-step inline confirm -->
-          <button
-            v-if="pendingDeleteId !== server.ID"
-            @click.stop="requestDelete(server.ID)"
-            class="text-xs px-2 py-1.5 border border-red-400 text-red-500 rounded-md hover:bg-red-50 transition-colors"
-          >{{ i18n.t('sv_delete') }}</button>
-          <div v-else class="flex gap-1" @click.stop>
-            <button
-              @click.stop="confirmDelete(server.ID)"
-              class="text-xs px-2 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-            >{{ i18n.lang === 'ja' ? '確認して削除' : 'Delete' }}</button>
-            <button
-              @click.stop="pendingDeleteId = null"
-              class="text-xs px-2 py-1.5 border border-gray-300 text-gray-500 rounded-md hover:bg-gray-100 transition-colors"
-            >✕</button>
-          </div>
         </div>
       </div>
     </div>

@@ -112,11 +112,16 @@ async function handleDisconnect() {
   selectedTool.value = null
 }
 
+const pendingDelete = ref(false)
+
 async function handleDelete() {
-  if (confirm(i18n.t('tv_delete_confirm', server.value?.name ?? ''))) {
-    await store.removeServer(serverID)
-    router.push('/servers')
+  if (!pendingDelete.value) {
+    pendingDelete.value = true
+    return
   }
+  pendingDelete.value = false
+  await store.removeServer(serverID)
+  router.push('/servers')
 }
 
 watch(() => server.value?.status, (newStatus, oldStatus) => {
@@ -204,7 +209,10 @@ async function execute() {
           class="w-full py-2 text-xs rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition-colors font-medium disabled:opacity-50">{{ i18n.t('tv_connect') }}</button>
 
         <button @click="handleDelete"
-          class="w-full py-1.5 text-xs text-destructive border border-destructive/30 rounded-lg hover:bg-destructive/10 transition-colors">{{ i18n.t('tv_delete_server') }}</button>
+          :class="pendingDelete
+            ? 'w-full py-1.5 text-xs bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium'
+            : 'w-full py-1.5 text-xs text-red-500 border border-red-300 rounded-lg hover:bg-red-50 transition-colors'"
+        >{{ pendingDelete ? (i18n.lang === 'ja' ? '本当に削除する' : 'Confirm Delete') : i18n.t('tv_delete_server') }}</button>
       </div>
 
       <!-- Tools list -->
