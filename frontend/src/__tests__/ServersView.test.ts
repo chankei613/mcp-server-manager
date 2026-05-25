@@ -34,16 +34,19 @@ describe('ServersView', () => {
     expect(wrapper.text()).toContain('MCP サーバーがまだ登録されていません')
   })
 
-  it('shows add form when "+ Add Server" is clicked', async () => {
+  it('shows add form when add server button is clicked', async () => {
     const wrapper = mountServersView()
-    await wrapper.find('button[class*="bg-primary"]').trigger('click')
+    const addBtn = wrapper.findAll('button').find(b => b.text().includes('手動で追加') || b.text().includes('サーバーを追加'))
+    await addBtn!.trigger('click')
     expect(wrapper.text()).toContain('新しいサーバー')
     expect(wrapper.find('input').exists()).toBe(true)
   })
 
   it('hides add form when Cancel is clicked', async () => {
     const wrapper = mountServersView()
-    await wrapper.find('button[class*="bg-primary"]').trigger('click')
+    // open form via onboarding step 2 link
+    const addBtn = wrapper.findAll('button').find(b => b.text().includes('サーバーを追加') || b.text().includes('手動で追加'))
+    await addBtn!.trigger('click')
     const cancelBtn = wrapper.findAll('button').find(b => b.text() === 'キャンセル')
     await cancelBtn!.trigger('click')
     expect(wrapper.text()).not.toContain('新しいサーバー')
@@ -51,24 +54,13 @@ describe('ServersView', () => {
 
   it('calls AddServer when form is submitted', async () => {
     const wrapper = mountServersView()
-    await wrapper.find('button[class*="bg-primary"]').trigger('click')
+    const addBtn = wrapper.findAll('button').find(b => b.text().includes('サーバーを追加') || b.text().includes('手動で追加'))
+    await addBtn!.trigger('click')
     const inputs = wrapper.findAll('input')
     await inputs[0].setValue('my-server')
-    const addBtn = wrapper.findAll('button').find(b => b.text() === '追加')
-    await addBtn!.trigger('click')
+    const submitBtn = wrapper.findAll('button').find(b => b.text() === '追加')
+    await submitBtn!.trigger('click')
     expect(AppBindings.AddServer).toHaveBeenCalledWith('my-server', 'stdio', '', '[]', '')
-  })
-
-  it('shows import result after clicking import button', async () => {
-    const wrapper = mountServersView()
-    const importBtn = wrapper.findAll('button').find(b => b.text().includes('Claude Desktop'))
-    await importBtn!.trigger('click')
-    // wait for async import
-    await vi.runAllTimersAsync().catch(() => {})
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
-    expect(AppBindings.GetClaudeDesktopConfigPath).toHaveBeenCalled()
-    expect(AppBindings.ImportClaudeDesktopConfig).toHaveBeenCalled()
   })
 
   it('shows server list after servers are loaded', async () => {

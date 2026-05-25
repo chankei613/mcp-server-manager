@@ -15,9 +15,7 @@ onMounted(() => {
 const showAddForm = ref(false)
 const form = ref({ name: '', transport: 'stdio', command: '', args: '[]', url: '' })
 const connecting = ref<number | null>(null)
-const importing = ref(false)
-const importResult = ref<{ imported: string[], skipped: string[], errors: string[] } | null>(null)
-const importError = ref<string | null>(null)
+const pendingDeleteId = ref<number | null>(null)
 
 const statusColors: Record<string, string> = {
   connected: 'bg-green-500',
@@ -48,21 +46,13 @@ async function handleDisconnect(id: number) {
   await store.disconnect(id)
 }
 
-async function handleDelete(id: number, name: string) {
-  if (confirm(i18n.t('sv_delete_confirm', name))) await store.removeServer(id)
+function requestDelete(id: number) {
+  pendingDeleteId.value = id
 }
 
-async function handleImport() {
-  importing.value = true
-  importResult.value = null
-  importError.value = null
-  try {
-    importResult.value = await store.importClaudeDesktop()
-  } catch (e) {
-    importError.value = String(e)
-  } finally {
-    importing.value = false
-  }
+async function confirmDelete(id: number) {
+  pendingDeleteId.value = null
+  await store.removeServer(id)
 }
 </script>
 
@@ -73,38 +63,6 @@ async function handleImport() {
         <h2 class="text-lg font-semibold">{{ i18n.t('sv_title') }}</h2>
         <p class="text-sm text-muted-foreground">{{ i18n.t('sv_count', store.servers.length) }}</p>
       </div>
-      <div class="flex gap-2">
-        <button
-          @click="handleImport"
-          :disabled="importing"
-          class="px-3 py-1.5 text-sm border border-border rounded-md hover:bg-accent disabled:opacity-50 transition-colors"
-        >
-          {{ importing ? i18n.t('sv_importing') : i18n.t('sv_import_btn') }}
-        </button>
-        <button
-          @click="showAddForm = !showAddForm"
-          class="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity"
-        >
-          {{ i18n.t('sv_add_btn') }}
-        </button>
-      </div>
-    </div>
-
-    <!-- Import result banner -->
-    <div v-if="importResult" class="mb-4 p-3 border border-border rounded-lg text-xs space-y-1">
-      <p class="font-medium">{{ i18n.t('sv_import_complete') }}</p>
-      <p v-if="importResult.imported?.length" class="text-green-400">
-        {{ i18n.t('sv_imported', importResult.imported.join(', ')) }}
-      </p>
-      <p v-if="importResult.skipped?.length" class="text-muted-foreground">
-        {{ i18n.t('sv_skipped', importResult.skipped.join(', ')) }}
-      </p>
-      <p v-for="err in importResult.errors" :key="err" class="text-destructive">✗ {{ err }}</p>
-      <button @click="importResult = null" class="text-muted-foreground hover:text-foreground mt-1">{{ i18n.t('sv_dismiss') }}</button>
-    </div>
-    <div v-if="importError" class="mb-4 p-3 border border-destructive/50 rounded-lg text-xs text-destructive">
-      {{ importError }}
-      <button @click="importError = null" class="ml-2 hover:opacity-70">✕</button>
     </div>
 
     <!-- Add form -->
@@ -248,10 +206,23 @@ async function handleImport() {
             :disabled="connecting === server.ID"
             class="text-xs px-3 py-1.5 rounded-md border border-border hover:bg-accent transition-colors disabled:opacity-50"
           >{{ i18n.t('sv_connect') }}</button>
+
+          <!-- Delete: 2-step inline confirm -->
           <button
-            @click.stop="handleDelete(server.ID, server.name)"
+            v-if="pendingDeleteId !== server.ID"
+            @click.stop="requestDelete(server.ID)"
             class="text-xs px-2 py-1.5 border border-destructive/50 text-destructive rounded-md hover:bg-destructive/10 transition-colors"
           >{{ i18n.t('sv_delete') }}</button>
+          <div v-else class="flex gap-1" @click.stop>
+            <button
+              @click.stop="confirmDelete(server.ID)"
+              class="text-xs px-2 py-1.5 bg-destructive text-white rounded-md hover:opacity-90 transition-opacity"
+            >{{ i18n.lang === 'ja' ? '確認' : 'Sure?' }}</button>
+            <button
+              @click.stop="pendingDeleteId = null"
+              class="text-xs px-2 py-1.5 border border-border rounded-md hover:bg-accent transition-colors"
+            >✕</button>
+          </div>
         </div>
       </div>
     </div>
