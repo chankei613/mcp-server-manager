@@ -211,16 +211,16 @@ async function confirmDelete(id: number) {
           <button
             v-if="pendingDeleteId !== server.ID"
             @click.stop="requestDelete(server.ID)"
-            class="text-xs px-2 py-1.5 border border-destructive/50 text-destructive rounded-md hover:bg-destructive/10 transition-colors"
+            class="text-xs px-2 py-1.5 border border-red-400 text-red-500 rounded-md hover:bg-red-50 transition-colors"
           >{{ i18n.t('sv_delete') }}</button>
           <div v-else class="flex gap-1" @click.stop>
             <button
               @click.stop="confirmDelete(server.ID)"
-              class="text-xs px-2 py-1.5 bg-destructive text-white rounded-md hover:opacity-90 transition-opacity"
-            >{{ i18n.lang === 'ja' ? '確認' : 'Sure?' }}</button>
+              class="text-xs px-2 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+            >{{ i18n.t('sv_delete_ok') }}</button>
             <button
               @click.stop="pendingDeleteId = null"
-              class="text-xs px-2 py-1.5 border border-border rounded-md hover:bg-accent transition-colors"
+              class="text-xs px-2 py-1.5 border border-gray-300 text-gray-500 rounded-md hover:bg-gray-100 transition-colors"
             >✕</button>
           </div>
         </div>
