@@ -371,9 +371,7 @@ func (a *App) updateStatus(serverID uint, status db.ServerStatus, errMsg string)
 		return
 	}
 	server.Status = status
-	if errMsg != "" {
-		server.LastError = errMsg
-	}
+	server.LastError = errMsg // 空文字ならクリア（reconnect 後にエラーが残らない）
 	db.DB.Save(&server)
 
 	runtime.EventsEmit(a.ctx, "server:status", server)

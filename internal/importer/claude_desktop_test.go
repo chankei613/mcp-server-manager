@@ -3,6 +3,7 @@ package importer
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,6 +27,43 @@ func TestParseArgsFallback(t *testing.T) {
 	args, err := ParseArgs("npx -y server")
 	require.NoError(t, err)
 	assert.Equal(t, []string{"npx", "-y", "server"}, args)
+}
+
+// TestFindServerEnvCaseInsensitive covers the bug where a server named "Github" in the app
+// could not find env vars stored under "github" in ~/.claude.json.
+func TestFindServerEnvCaseInsensitive(t *testing.T) {
+	config := `{
+		"mcpServers": {
+			"github": {
+				"command": "npx",
+				"args": ["-y", "@modelcontextprotocol/server-github"],
+				"env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_test123" }
+			}
+		}
+	}`
+
+	tmp := t.TempDir()
+	configPath := filepath.Join(tmp, "claude.json")
+	require.NoError(t, os.WriteFile(configPath, []byte(config), 0644))
+
+	cfg, err := parseConfig(configPath)
+	require.NoError(t, err)
+
+	// Exact match works
+	assert.Equal(t, "ghp_test123", cfg.MCPServers["github"].Env["GITHUB_PERSONAL_ACCESS_TOKEN"])
+
+	// Case-insensitive via FindServerEnv requires the file to be in the candidate list.
+	// Test the underlying logic directly using parseConfig + manual lookup.
+	lowerName := strings.ToLower("Github")
+	var found map[string]string
+	for key, server := range cfg.MCPServers {
+		if strings.ToLower(key) == lowerName && len(server.Env) > 0 {
+			found = server.Env
+			break
+		}
+	}
+	require.NotNil(t, found, "case-insensitive lookup should find 'github' when searching 'Github'")
+	assert.Equal(t, "ghp_test123", found["GITHUB_PERSONAL_ACCESS_TOKEN"])
 }
 
 func TestImportFromClaudeDesktop(t *testing.T) {

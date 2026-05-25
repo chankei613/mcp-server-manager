@@ -20,4 +20,10 @@ vi.mock('../../wailsjs/go/main/App', () => ({
   GetEvents: vi.fn().mockResolvedValue([]),
   GetClaudeDesktopConfigPath: vi.fn().mockResolvedValue('/mock/path/claude_desktop_config.json'),
   ImportClaudeDesktopConfig: vi.fn().mockResolvedValue({ imported: ['server-a'], skipped: [], errors: [] }),
+  GetAppVersion: vi.fn().mockResolvedValue('0.1.0'),
+  GetLocalClaudeConfigPath: vi.fn().mockResolvedValue('/mock/.claude.json'),
+  GetCursorConfigPath: vi.fn().mockResolvedValue('/mock/cursor.json'),
+  GetWindsurfConfigPath: vi.fn().mockResolvedValue('/mock/windsurf.json'),
+  ImportFromPath: vi.fn().mockResolvedValue({ imported: [], skipped: [], errors: [] }),
+  PickFile: vi.fn().mockResolvedValue(''),
 }))

@@ -243,8 +243,10 @@ async function execute() {
         <div v-else-if="tools.length === 0" class="p-4 text-xs text-muted-foreground text-center">{{ i18n.t('tv_no_tools') }}</div>
         <div v-else class="p-2">
           <button v-for="tool in tools" :key="tool.name" @click="selectTool(tool)"
-            class="w-full text-left px-3 py-2 rounded-md hover:bg-accent transition-colors mb-0.5"
-            :class="selectedTool?.name === tool.name ? 'bg-accent' : ''">
+            class="w-full text-left px-3 py-2 rounded-md transition-colors mb-0.5"
+            :class="selectedTool?.name === tool.name
+              ? 'bg-indigo-600 text-white'
+              : 'hover:bg-gray-100 text-gray-700'">
             <p class="text-xs font-medium text-foreground truncate">{{ tool.name }}</p>
             <p class="text-xs text-muted-foreground truncate mt-0.5">{{ tool.description }}</p>
           </button>
