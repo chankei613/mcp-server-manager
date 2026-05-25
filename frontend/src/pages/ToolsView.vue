@@ -113,6 +113,7 @@ async function handleDisconnect() {
 }
 
 const pendingDelete = ref(false)
+const deleted = ref(false)
 
 async function handleDelete() {
   if (!pendingDelete.value) {
@@ -121,7 +122,8 @@ async function handleDelete() {
   }
   pendingDelete.value = false
   await store.removeServer(serverID)
-  router.push('/servers')
+  deleted.value = true
+  setTimeout(() => router.push('/servers'), 1500)
 }
 
 watch(() => server.value?.status, (newStatus, oldStatus) => {
@@ -177,6 +179,20 @@ async function execute() {
 </script>
 
 <template>
+  <!-- Deleted overlay -->
+  <Transition name="fade">
+    <div v-if="deleted" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div class="bg-white rounded-2xl shadow-xl px-10 py-8 flex flex-col items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <p class="text-sm font-semibold text-gray-800">{{ i18n.lang === 'ja' ? '削除しました' : 'Deleted' }}</p>
+      </div>
+    </div>
+  </Transition>
+
   <div class="flex h-full">
     <!-- Left panel -->
     <div class="w-64 border-r border-border flex flex-col overflow-hidden shrink-0">
@@ -363,3 +379,9 @@ async function execute() {
     </div>
   </div>
 </template>
+
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.25s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>
