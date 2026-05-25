@@ -105,7 +105,7 @@ func ImportFromClaudeDesktop(configPath string) (*ImportResult, error) {
 	return result, nil
 }
 
-// FindServerEnv は全既知設定ファイルをサーバー名で検索し、envマップを返す
+// FindServerEnv は全既知設定ファイルをサーバー名で検索し、envマップを返す（大文字小文字無視）
 // セキュリティ方針: env は DB に保存せず Connect 時にのみ取得する
 func FindServerEnv(serverName string) map[string]string {
 	home, _ := os.UserHomeDir()
@@ -118,13 +118,20 @@ func FindServerEnv(serverName string) map[string]string {
 		filepath.Join(home, ".cursor", "mcp.json"),
 		filepath.Join(home, ".codeium", "windsurf", "mcp_config.json"),
 	}
+	lowerName := strings.ToLower(serverName)
 	for _, path := range candidates {
 		cfg, err := parseConfig(path)
 		if err != nil {
 			continue
 		}
+		// 完全一致を優先し、次に大文字小文字無視で検索
 		if server, ok := cfg.MCPServers[serverName]; ok && len(server.Env) > 0 {
 			return server.Env
+		}
+		for key, server := range cfg.MCPServers {
+			if strings.ToLower(key) == lowerName && len(server.Env) > 0 {
+				return server.Env
+			}
 		}
 	}
 	return nil

@@ -236,10 +236,25 @@ func (t *StdioTransport) readStderr(r io.ReadCloser) {
 }
 
 func (t *StdioTransport) waitProcess() {
-	if err := t.cmd.Wait(); err != nil && t.running.Load() {
-		t.running.Store(false)
-		t.emit("error", fmt.Sprintf("process exited: %s", err))
+	err := t.cmd.Wait()
+	if !t.running.Load() {
+		return // Stop() で既に処理済み
 	}
+	t.running.Store(false)
+
+	// プロセスが予期せず終了した場合、pending リクエストを即キャンセル（タイムアウト30sを待たない）
+	exitMsg := "process exited"
+	if err != nil {
+		exitMsg = fmt.Sprintf("process exited: %s", err)
+	}
+	t.mu.Lock()
+	for id, ch := range t.pending {
+		ch <- &Response{Error: &RPCError{Code: -32000, Message: exitMsg}}
+		delete(t.pending, id)
+	}
+	t.mu.Unlock()
+
+	t.emit("error", exitMsg)
 }
 
 func (t *StdioTransport) emit(eventType, message string) {
