@@ -117,10 +117,13 @@ func (a *App) UpdateServer(id uint, name, command, argsJSON, url string) (*db.MC
 	return &server, nil
 }
 
-// DeleteServer はサーバーを削除する（切断してから削除）
+// DeleteServer はサーバーを削除する（切断してから物理削除）
 func (a *App) DeleteServer(id uint) error {
-	_ = a.DisconnectServer(id) // エラーは無視（既に切断済みの可能性）
-	return db.DB.Delete(&db.MCPServer{}, id).Error
+	_ = a.DisconnectServer(id)
+	// 関連レコードを先に削除してから本体を物理削除（soft deleteだと同名再登録時にUNIQUE制約エラーになる）
+	db.DB.Unscoped().Where("server_id = ?", id).Delete(&db.MCPEvent{})
+	db.DB.Unscoped().Where("server_id = ?", id).Delete(&db.ToolExecution{})
+	return db.DB.Unscoped().Delete(&db.MCPServer{}, id).Error
 }
 
 // ─── Connection lifecycle ─────────────────────────────────────────
