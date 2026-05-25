@@ -30,7 +30,7 @@ function isActive(prefix: string) {
     <aside class="w-56 border-r border-border flex flex-col shrink-0 bg-background">
       <div class="p-4 border-b border-border">
         <h1 class="text-sm font-semibold tracking-tight text-foreground">MCP Server Manager</h1>
-        <p class="text-xs text-muted-foreground mt-0.5">Postman for MCP</p>
+        <p class="text-xs text-muted-foreground mt-0.5">Visual Client for MCP Servers</p>
       </div>
 
       <nav class="flex-1 p-2 space-y-0.5">
