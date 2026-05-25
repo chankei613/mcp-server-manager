@@ -113,7 +113,6 @@ export const useServersStore = defineStore('servers', () => {
     EventsOn('server:status', (updated: db.MCPServer) => {
       const idx = servers.value.findIndex(s => s.ID === updated.ID)
       if (idx !== -1) servers.value[idx] = updated
-      else servers.value.push(updated)
     })
 
     EventsOn('server:event', (_payload: ServerEventPayload) => {
