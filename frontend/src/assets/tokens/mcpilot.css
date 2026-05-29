@@ -1,0 +1,34 @@
+/* MCPilot — Semantic Tokens
+   Layer: Product (extends brand.css)
+   Planet: Saturn
+*/
+
+:root {
+  /* ── Saturn Palette ─────────────────────────── */
+  --saturn-gold:    #E8B84B;
+  --saturn-muted:   #B5A882;
+
+  /* ── Backgrounds ────────────────────────────── */
+  --bg-base:        var(--neutral-900);
+  --bg-surface:     var(--neutral-800);
+  --bg-elevated:    var(--neutral-700);
+
+  /* ── Text ───────────────────────────────────── */
+  --text-primary:   var(--neutral-50);
+  --text-secondary: var(--neutral-400);
+  --text-muted:     var(--neutral-500);
+
+  /* ── Border ─────────────────────────────────── */
+  --border:         var(--neutral-700);
+  --border-subtle:  var(--neutral-800);
+
+  /* ── Accent (Saturn Gold) ───────────────────── */
+  --accent:         var(--saturn-gold);
+  --accent-muted:   color-mix(in srgb, var(--saturn-gold) 15%, transparent);
+
+  /* ── Status ─────────────────────────────────── */
+  --status-connected:    #4ADE80;
+  --status-degraded:     #FBB040;
+  --status-disconnected: var(--neutral-500);
+  --status-error:        #F87171;
+}

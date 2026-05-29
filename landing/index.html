@@ -190,91 +190,51 @@
 
     /* ── Screenshot ── */
     .screenshot-wrap {
-      max-width: 900px;
+      max-width: 960px;
       margin: 56px auto 0;
       padding: 0 24px;
     }
 
-    .screenshot {
-      background: linear-gradient(135deg, #1e1e2e 0%, #2d2d3f 100%);
-      border-radius: 16px;
-      border: 1px solid #3a3a4f;
-      aspect-ratio: 16/10;
+    .screenshot-tabs {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05);
-    }
-
-    .screenshot-inner { display: flex; width: 100%; height: 100%; }
-
-    .screenshot-sidebar {
-      width: 200px;
-      background: #161622;
-      border-right: 1px solid #2a2a3a;
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-
-    .ss-header {
-      font-size: 11px;
-      color: #6b7280;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 8px;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .ss-item {
-      display: flex;
-      align-items: center;
       gap: 8px;
-      padding: 7px 10px;
-      border-radius: 8px;
-      font-family: 'Inter', sans-serif;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
 
-    .ss-item.active { background: rgba(99,102,241,0.2); }
-    .ss-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .ss-label { font-size: 12px; color: #d1d5db; }
-    .ss-label.active-label { color: #a5b4fc; }
-
-    .screenshot-main {
-      flex: 1;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .ss-tool-name { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: #f3f4f6; }
-    .ss-tool-desc { font-family: 'Inter', sans-serif; font-size: 12px; color: #9ca3af; }
-
-    .ss-field {
-      background: #1e1e2e;
-      border: 1px solid #2a2a3a;
-      border-radius: 8px;
-      padding: 10px 12px;
-    }
-
-    .ss-field-label { font-family: 'Inter', sans-serif; font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
-    .ss-field-value { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #a5b4fc; }
-
-    .ss-btn {
-      background: #6366f1;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-      font-family: 'Inter', sans-serif;
-      font-size: 12px;
+    .screenshot-tab {
+      font-size: 13px;
       font-weight: 600;
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .screenshot-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
       color: white;
-      margin-top: auto;
+    }
+
+    .screenshot-tab:hover:not(.active) { background: var(--card); color: var(--fg); }
+
+    .screenshot-panel {
+      display: none;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
+    }
+
+    .screenshot-panel.active { display: block; }
+
+    .screenshot-panel img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
     /* ── Integrations ── */
@@ -406,34 +366,18 @@
   <p class="price-note" data-i18n="hero_note">macOS · One-time purchase · No subscription</p>
 </section>
 
-<!-- Screenshot (UI mockup) -->
+<!-- Screenshot gallery -->
 <div class="screenshot-wrap">
-  <div class="screenshot">
-    <div class="screenshot-inner">
-      <div class="screenshot-sidebar">
-        <div class="ss-header">Servers</div>
-        <div class="ss-item active"><div class="ss-dot" style="background:#10b981"></div><span class="ss-label active-label">youtube</span></div>
-        <div class="ss-item"><div class="ss-dot" style="background:#10b981"></div><span class="ss-label">filesystem</span></div>
-        <div class="ss-item"><div class="ss-dot" style="background:#6b7280"></div><span class="ss-label">github</span></div>
-        <div class="ss-item"><div class="ss-dot" style="background:#6b7280"></div><span class="ss-label">puppeteer</span></div>
-        <div style="border-top:1px solid #2a2a3a;margin:8px 0;"></div>
-        <div class="ss-header" style="margin-bottom:4px;">Tools (12)</div>
-        <div class="ss-item active"><span class="ss-label active-label" style="font-size:11px;">searchVideos</span></div>
-        <div class="ss-item"><span class="ss-label" style="font-size:11px;">getTranscripts</span></div>
-        <div class="ss-item"><span class="ss-label" style="font-size:11px;">getVideoDetails</span></div>
-        <div class="ss-item"><span class="ss-label" style="font-size:11px;">getTrending</span></div>
-      </div>
-      <div class="screenshot-main">
-        <div><div class="ss-tool-name">searchVideos</div><div class="ss-tool-desc">Search YouTube videos by keyword, filter by date, duration, and more.</div></div>
-        <div class="ss-field"><div class="ss-field-label">query <span style="color:#f87171;font-size:9px">required · string</span></div><div class="ss-field-value">mcp server tutorial</div></div>
-        <div style="display:flex;gap:8px;">
-          <div class="ss-field" style="flex:1"><div class="ss-field-label">maxResults · number</div><div class="ss-field-value">10</div></div>
-          <div class="ss-field" style="flex:1"><div class="ss-field-label">order · enum</div><div class="ss-field-value">relevance</div></div>
-        </div>
-        <div class="ss-btn">▶  Execute</div>
-      </div>
-    </div>
+  <div class="screenshot-tabs">
+    <button class="screenshot-tab active" onclick="showTab(0)">Server List</button>
+    <button class="screenshot-tab" onclick="showTab(1)">Connect &amp; Inspect</button>
+    <button class="screenshot-tab" onclick="showTab(2)">Execute Tools</button>
+    <button class="screenshot-tab" onclick="showTab(3)">Import Config</button>
   </div>
+  <div class="screenshot-panel active"><img src="app-sc01.png" alt="MCPilot — Server List" /></div>
+  <div class="screenshot-panel"><img src="app-sc02.png" alt="MCPilot — Connect & Inspect" /></div>
+  <div class="screenshot-panel"><img src="app-sc03.png" alt="MCPilot — Execute Tools" /></div>
+  <div class="screenshot-panel"><img src="app-sc04.png" alt="MCPilot — Import Config" /></div>
 </div>
 
 <!-- Integrations -->
@@ -666,6 +610,11 @@ const T = {
     pricing_secure: 'Stripe で安全に決済 · macOS 12+',
     footer_contact: 'お問い合わせ',
   }
+}
+
+function showTab(index) {
+  document.querySelectorAll('.screenshot-tab').forEach((t, i) => t.classList.toggle('active', i === index))
+  document.querySelectorAll('.screenshot-panel').forEach((p, i) => p.classList.toggle('active', i === index))
 }
 
 let currentLang = localStorage.getItem('lp_lang') || 'en'
