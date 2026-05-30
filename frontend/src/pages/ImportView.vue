@@ -68,6 +68,7 @@ function goToServers() {
 }
 
 type MethodKey = 'iv_method_claude_desktop' | 'iv_method_claude_code' | 'iv_method_cursor' | 'iv_method_windsurf' | 'iv_method_custom'
+type MethodDescKey = 'iv_method_claude_desktop_desc' | 'iv_method_claude_code_desc' | 'iv_method_cursor_desc' | 'iv_method_windsurf_desc' | 'iv_method_custom_desc'
 
 const methodTitleKey: Record<Method, MethodKey> = {
   'claude-desktop': 'iv_method_claude_desktop',
@@ -75,6 +76,14 @@ const methodTitleKey: Record<Method, MethodKey> = {
   'cursor':         'iv_method_cursor',
   'windsurf':       'iv_method_windsurf',
   'custom':         'iv_method_custom',
+}
+
+const methodDescKey: Record<Method, MethodDescKey> = {
+  'claude-desktop': 'iv_method_claude_desktop_desc',
+  'claude-code':    'iv_method_claude_code_desc',
+  'cursor':         'iv_method_cursor_desc',
+  'windsurf':       'iv_method_windsurf_desc',
+  'custom':         'iv_method_custom_desc',
 }
 
 const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.value]))
@@ -95,124 +104,34 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
       </p>
 
       <div class="space-y-2">
-        <!-- Claude Desktop -->
-        <label
+        <label v-for="method in (['claude-desktop', 'claude-code', 'cursor', 'windsurf', 'custom'] as const)"
+          :key="method"
           class="flex items-center gap-3 p-3.5 border-2 rounded-lg cursor-pointer transition-all"
-          :class="selectedMethod === 'claude-desktop'
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-border bg-white hover:border-blue-200 hover:bg-blue-50/30'"
+          :class="selectedMethod === method
+            ? 'border-primary/50 bg-primary/10'
+            : 'border-border bg-card hover:border-primary/25 hover:bg-secondary'"
         >
-          <input type="radio" v-model="selectedMethod" value="claude-desktop" class="sr-only" />
+          <input type="radio" v-model="selectedMethod" :value="method" class="sr-only" />
           <span
             class="flex items-center justify-center w-5 h-5 rounded-full border-2 shrink-0 transition-all"
-            :class="selectedMethod === 'claude-desktop' ? 'border-blue-500 bg-blue-500' : 'border-muted-foreground'"
+            :class="selectedMethod === method ? 'border-primary bg-primary' : 'border-muted-foreground'"
           >
-            <svg v-if="selectedMethod === 'claude-desktop'" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+            <svg v-if="selectedMethod === method" class="w-3 h-3 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </span>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium" :class="selectedMethod === 'claude-desktop' ? 'text-blue-900' : 'text-foreground'">
-              {{ i18n.t('iv_method_claude_desktop') }}
+            <p class="text-sm font-medium" :class="selectedMethod === method ? 'text-primary' : 'text-foreground'">
+              {{ i18n.t(methodTitleKey[method]) }}
             </p>
-            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_claude_desktop_desc') }}</p>
-          </div>
-        </label>
-
-        <!-- Claude Code -->
-        <label
-          class="flex items-center gap-3 p-3.5 border-2 rounded-lg cursor-pointer transition-all"
-          :class="selectedMethod === 'claude-code'
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-border bg-white hover:border-blue-200 hover:bg-blue-50/30'"
-        >
-          <input type="radio" v-model="selectedMethod" value="claude-code" class="sr-only" />
-          <span
-            class="flex items-center justify-center w-5 h-5 rounded-full border-2 shrink-0 transition-all"
-            :class="selectedMethod === 'claude-code' ? 'border-blue-500 bg-blue-500' : 'border-muted-foreground'"
-          >
-            <svg v-if="selectedMethod === 'claude-code'" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </span>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium" :class="selectedMethod === 'claude-code' ? 'text-blue-900' : 'text-foreground'">
-              {{ i18n.t('iv_method_claude_code') }}
-            </p>
-            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_claude_code_desc') }}</p>
-          </div>
-        </label>
-
-        <!-- Cursor -->
-        <label
-          class="flex items-center gap-3 p-3.5 border-2 rounded-lg cursor-pointer transition-all"
-          :class="selectedMethod === 'cursor'
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-border bg-white hover:border-blue-200 hover:bg-blue-50/30'"
-        >
-          <input type="radio" v-model="selectedMethod" value="cursor" class="sr-only" />
-          <span
-            class="flex items-center justify-center w-5 h-5 rounded-full border-2 shrink-0 transition-all"
-            :class="selectedMethod === 'cursor' ? 'border-blue-500 bg-blue-500' : 'border-muted-foreground'"
-          >
-            <svg v-if="selectedMethod === 'cursor'" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </span>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium" :class="selectedMethod === 'cursor' ? 'text-blue-900' : 'text-foreground'">{{ i18n.t('iv_method_cursor') }}</p>
-            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_cursor_desc') }}</p>
-          </div>
-        </label>
-
-        <!-- Windsurf -->
-        <label
-          class="flex items-center gap-3 p-3.5 border-2 rounded-lg cursor-pointer transition-all"
-          :class="selectedMethod === 'windsurf'
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-border bg-white hover:border-blue-200 hover:bg-blue-50/30'"
-        >
-          <input type="radio" v-model="selectedMethod" value="windsurf" class="sr-only" />
-          <span
-            class="flex items-center justify-center w-5 h-5 rounded-full border-2 shrink-0 transition-all"
-            :class="selectedMethod === 'windsurf' ? 'border-blue-500 bg-blue-500' : 'border-muted-foreground'"
-          >
-            <svg v-if="selectedMethod === 'windsurf'" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </span>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium" :class="selectedMethod === 'windsurf' ? 'text-blue-900' : 'text-foreground'">{{ i18n.t('iv_method_windsurf') }}</p>
-            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_windsurf_desc') }}</p>
-          </div>
-        </label>
-
-        <!-- Custom -->
-        <label
-          class="flex items-center gap-3 p-3.5 border-2 rounded-lg cursor-pointer transition-all"
-          :class="selectedMethod === 'custom'
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-border bg-white hover:border-blue-200 hover:bg-blue-50/30'"
-        >
-          <input type="radio" v-model="selectedMethod" value="custom" class="sr-only" />
-          <span
-            class="flex items-center justify-center w-5 h-5 rounded-full border-2 shrink-0 transition-all"
-            :class="selectedMethod === 'custom' ? 'border-blue-500 bg-blue-500' : 'border-muted-foreground'"
-          >
-            <svg v-if="selectedMethod === 'custom'" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </span>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium" :class="selectedMethod === 'custom' ? 'text-blue-900' : 'text-foreground'">{{ i18n.t('iv_method_custom') }}</p>
-            <p class="text-xs text-muted-foreground">{{ i18n.t('iv_method_custom_desc') }}</p>
+            <p class="text-xs text-muted-foreground">{{ i18n.t(methodDescKey[method]) }}</p>
           </div>
         </label>
       </div>
     </div>
 
     <!-- Step 2: Path confirmation -->
-    <div class="mb-6 p-4 border border-border rounded-lg bg-white space-y-3">
+    <div class="mb-6 p-4 border border-border rounded-lg bg-card space-y-3">
       <div>
         <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
           {{ i18n.t('iv_step2') }}
@@ -224,10 +143,10 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
 
       <!-- Claude Desktop -->
       <template v-if="selectedMethod === 'claude-desktop'">
-        <code class="block w-full px-3 py-2 text-xs bg-gray-100 border border-border rounded-md text-gray-700 break-all leading-relaxed select-all">
+        <code class="block w-full px-3 py-2 text-xs bg-secondary border border-border rounded-md text-foreground break-all leading-relaxed select-all">
           {{ claudeDesktopPath || i18n.t('iv_detecting') }}
         </code>
-        <p class="text-xs text-gray-500">{{ i18n.t('iv_path_hint') }}</p>
+        <p class="text-xs text-muted-foreground">{{ i18n.t('iv_path_hint') }}</p>
       </template>
 
       <!-- Claude Code -->
@@ -237,9 +156,9 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
           placeholder="~/.claude.json"
           class="w-full px-3 py-2 text-sm bg-input border border-border rounded-md font-mono focus:outline-none focus:ring-1 focus:ring-ring"
         />
-        <code class="block text-xs text-gray-500 break-all leading-relaxed px-1">{{ claudeCodePath }}</code>
-        <p class="text-xs text-gray-500">
-          <code class="bg-gray-100 px-1 rounded">~/.claude.json</code>
+        <code class="block text-xs text-muted-foreground break-all leading-relaxed px-1">{{ claudeCodePath }}</code>
+        <p class="text-xs text-muted-foreground">
+          <code class="bg-secondary px-1 rounded">~/.claude.json</code>
           {{ i18n.t('iv_claude_code_hint', '~/.claude.json', '~/.claude/claude_desktop_config.json') }}
         </p>
       </template>
@@ -251,8 +170,8 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
           placeholder="~/.cursor/mcp.json"
           class="w-full px-3 py-2 text-sm bg-input border border-border rounded-md font-mono focus:outline-none focus:ring-1 focus:ring-ring"
         />
-        <code class="block text-xs text-gray-500 break-all leading-relaxed px-1">{{ cursorPath }}</code>
-        <p class="text-xs text-gray-500">{{ i18n.t('iv_cursor_hint') }}</p>
+        <code class="block text-xs text-muted-foreground break-all leading-relaxed px-1">{{ cursorPath }}</code>
+        <p class="text-xs text-muted-foreground">{{ i18n.t('iv_cursor_hint') }}</p>
       </template>
 
       <!-- Windsurf -->
@@ -262,7 +181,7 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
           placeholder="~/.codeium/windsurf/mcp_config.json"
           class="w-full px-3 py-2 text-sm bg-input border border-border rounded-md font-mono focus:outline-none focus:ring-1 focus:ring-ring"
         />
-        <code class="block text-xs text-gray-500 break-all leading-relaxed px-1">{{ windsurfPath }}</code>
+        <code class="block text-xs text-muted-foreground break-all leading-relaxed px-1">{{ windsurfPath }}</code>
       </template>
 
       <!-- Custom -->
@@ -275,14 +194,14 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
           />
           <button
             @click="handlePickFile"
-            class="px-3 py-2 text-sm border border-border rounded-md hover:bg-accent transition-colors shrink-0"
+            class="px-3 py-2 text-sm border border-border rounded-md hover:bg-secondary transition-colors shrink-0"
           >
             {{ i18n.t('iv_browse') }}
           </button>
         </div>
-        <code v-if="customPath" class="block text-xs text-gray-500 break-all leading-relaxed px-1">{{ customPath }}</code>
-        <p class="text-xs text-gray-500">
-          <code class="bg-gray-100 px-1 rounded">mcpServers</code> — {{ i18n.t('iv_custom_hint') }}
+        <code v-if="customPath" class="block text-xs text-muted-foreground break-all leading-relaxed px-1">{{ customPath }}</code>
+        <p class="text-xs text-muted-foreground">
+          <code class="bg-secondary px-1 rounded">mcpServers</code> — {{ i18n.t('iv_custom_hint') }}
         </p>
       </template>
     </div>
@@ -306,7 +225,7 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
     </div>
 
     <!-- Result -->
-    <div v-if="result && !importing" class="mb-4 rounded-xl border overflow-hidden">
+    <div v-if="result && !importing" class="mb-4 rounded-xl border border-border overflow-hidden">
       <!-- 0件: mcpServers なし -->
       <template v-if="!result.imported?.length && !result.skipped?.length && !result.errors?.length">
         <div class="p-4 bg-yellow-50 border-b border-yellow-200">
@@ -314,9 +233,9 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
         </div>
         <div class="p-4 bg-white space-y-2 text-sm text-gray-700">
           <p>{{ i18n.t('iv_no_servers_desc') }}</p>
-          <p class="text-xs text-gray-500">{{ i18n.t('iv_read_file') }}</p>
-          <p class="text-xs font-mono text-gray-700 break-all bg-gray-50 px-2 py-1 rounded">{{ lastImportedPath }}</p>
-          <p class="text-xs text-gray-500">{{ i18n.t('iv_try_custom') }}</p>
+          <p class="text-xs text-muted-foreground">{{ i18n.t('iv_read_file') }}</p>
+          <p class="text-xs font-mono text-foreground break-all bg-secondary/50 px-2 py-1 rounded">{{ lastImportedPath }}</p>
+          <p class="text-xs text-muted-foreground">{{ i18n.t('iv_try_custom') }}</p>
         </div>
       </template>
 
@@ -364,7 +283,7 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
           <button
             v-if="result.imported?.length"
             @click="goToServers"
-            class="w-full py-2 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            class="w-full py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
           >
             {{ i18n.t('iv_go_servers') }}
           </button>
@@ -376,7 +295,7 @@ const currentMethodTitle = computed(() => i18n.t(methodTitleKey[selectedMethod.v
     <button
       @click="handleImport"
       :disabled="importing || (selectedMethod === 'custom' && !customPath)"
-      class="w-full flex items-center justify-center gap-2 py-3 text-base font-semibold bg-blue-600 text-white rounded-xl shadow-sm hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+      class="w-full flex items-center justify-center gap-2 py-3 text-base font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
     >
       <svg v-if="!importing" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />

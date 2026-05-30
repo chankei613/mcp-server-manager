@@ -29,7 +29,7 @@ function isActive(prefix: string) {
     <!-- Sidebar -->
     <aside class="w-56 border-r border-border flex flex-col shrink-0 bg-background">
       <div class="p-4 border-b border-border">
-        <h1 class="text-sm font-semibold tracking-tight text-foreground">MCP Server Manager</h1>
+        <h1 class="text-sm font-semibold tracking-tight text-foreground">MCPilot</h1>
         <p class="text-xs text-muted-foreground mt-0.5">Visual Client for MCP Servers</p>
       </div>
 
@@ -38,7 +38,7 @@ function isActive(prefix: string) {
           to="/servers"
           class="flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors"
           :class="isActive('/servers')
-            ? 'bg-gray-900 text-white'
+            ? 'bg-gray-100 text-gray-900'
             : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'"
         >
           <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -53,8 +53,8 @@ function isActive(prefix: string) {
           to="/import"
           class="flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors"
           :class="isActive('/import')
-            ? 'bg-gray-900 text-white'
-            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'"
+            ? 'bg-primary/15 text-primary'
+            : 'text-muted-foreground hover:bg-secondary hover:text-foreground'"
         >
           <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -76,7 +76,7 @@ function isActive(prefix: string) {
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 overflow-auto bg-gray-50/50 flex flex-col">
+    <main class="flex-1 overflow-auto bg-background flex flex-col">
       <!-- Update banner -->
       <div v-if="updateInfo" class="shrink-0 flex items-center justify-between px-4 py-2 bg-indigo-600 text-white text-xs">
         <span>

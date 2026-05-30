@@ -188,7 +188,7 @@ async function execute() {
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p class="text-sm font-semibold text-gray-800">{{ i18n.lang === 'ja' ? '削除しました' : 'Deleted' }}</p>
+        <p class="text-sm font-semibold text-foreground">{{ i18n.lang === 'ja' ? '削除しました' : 'Deleted' }}</p>
       </div>
     </div>
   </Transition>
@@ -218,7 +218,7 @@ async function execute() {
         <button v-if="server?.status === 'connecting' || connecting" disabled
           class="w-full py-2 text-xs rounded-lg bg-blue-50 text-blue-600 border border-blue-200 cursor-not-allowed">{{ i18n.t('tv_connecting') }}</button>
         <button v-else-if="server?.status === 'connected'" @click="handleDisconnect"
-          class="w-full py-2 text-xs rounded-lg bg-green-50 text-green-700 border border-green-300 hover:bg-green-100 transition-colors">{{ i18n.t('tv_connected_disconnect') }}</button>
+          class="w-full py-2 text-xs rounded-lg bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors">{{ i18n.t('tv_connected_disconnect') }}</button>
         <button v-else-if="server?.status === 'error'" @click="handleConnect" :disabled="connecting"
           class="w-full py-2 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium disabled:opacity-50">{{ i18n.t('tv_retry') }}</button>
         <button v-else @click="handleConnect" :disabled="connecting"
@@ -245,7 +245,7 @@ async function execute() {
           <button v-for="tool in tools" :key="tool.name" @click="selectTool(tool)"
             class="w-full text-left px-3 py-2 rounded-md transition-colors mb-0.5"
             :class="selectedTool?.name === tool.name
-              ? 'bg-indigo-600 text-white'
+              ? 'bg-gray-900 text-white'
               : 'hover:bg-gray-100 text-gray-700'">
             <p class="text-xs font-medium text-foreground truncate">{{ tool.name }}</p>
             <p class="text-xs text-muted-foreground truncate mt-0.5">{{ tool.description }}</p>

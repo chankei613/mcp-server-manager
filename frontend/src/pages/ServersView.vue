@@ -115,7 +115,7 @@ async function handleDisconnect(id: number) {
       </div>
 
       <div class="space-y-3 mb-8">
-        <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-white">
+        <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-card">
           <span class="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
           <div>
             <p class="text-sm font-medium">{{ i18n.t('sv_step1_title') }}</p>
@@ -127,7 +127,7 @@ async function handleDisconnect(id: number) {
           </div>
         </div>
 
-        <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-white">
+        <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-card">
           <span class="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
           <div>
             <p class="text-sm font-medium">{{ i18n.t('sv_step2_title') }}</p>
@@ -139,7 +139,7 @@ async function handleDisconnect(id: number) {
           </div>
         </div>
 
-        <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-white">
+        <div class="flex items-start gap-3 p-4 border border-border rounded-lg bg-card">
           <span class="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
           <div>
             <p class="text-sm font-medium">{{ i18n.t('sv_step3_title') }}</p>
@@ -183,13 +183,13 @@ async function handleDisconnect(id: number) {
           <button
             v-else-if="server.status === 'connected'"
             @click.stop="handleDisconnect(server.ID)"
-            class="text-xs px-3 py-1.5 rounded-md bg-green-50 text-green-700 border border-green-300 hover:bg-green-100 transition-colors"
+            class="text-xs px-3 py-1.5 rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors"
           >{{ i18n.t('sv_connected') }}</button>
           <button
             v-else-if="server.status === 'error'"
             @click.stop="handleConnect(server.ID)"
             :disabled="connecting === server.ID"
-            class="text-xs px-3 py-1.5 rounded-md bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 transition-colors disabled:opacity-50"
+            class="text-xs px-3 py-1.5 rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50"
           >{{ i18n.t('sv_retry') }}</button>
           <button
             v-else
