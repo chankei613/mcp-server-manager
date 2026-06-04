@@ -25,12 +25,13 @@ if [ -z "$TEAM_ID" ]; then
   exit 1
 fi
 
-IDENTITY="Developer ID Application: アジサイ けいすけ (${TEAM_ID})"
+IDENTITY="Developer ID Application: keisuke haraguchi (${TEAM_ID})"
 
 echo "==> Building MCPilot v${VERSION}..."
 
 # Dropbox の拡張属性を除去してからビルド
 xattr -cr build/ 2>/dev/null || true
+export PATH="$PATH:$HOME/go/bin"
 wails build -platform darwin/universal -o "${APP_NAME}"
 
 echo "==> Code signing..."
