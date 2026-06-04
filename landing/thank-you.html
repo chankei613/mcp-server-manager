@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank you — MCPilot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --fg: #0f0f0f;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #6366f1;
+      --accent-light: #eef2ff;
+      --accent-dark: #4f46e5;
+      --green: #10b981;
+      --green-light: #dcfce7;
+      --card: #f9fafb;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.3px;
+    }
+
+    .nav-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.3px;
+    }
+    .lang-btn:hover { color: var(--fg); border-color: var(--fg); }
+
+    /* ── Main ── */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 24px;
+    }
+
+    .container {
+      max-width: 540px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ── Success icon ── */
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--green-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+    }
+
+    .success-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: var(--green);
+      stroke-width: 2.5;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    /* ── Download card ── */
+    .download-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #8b5cf6);
+    }
+
+    .download-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .download-name {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .download-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background: var(--fg);
+      color: white;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-download:hover { background: #1f2937; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+
+    .download-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    /* ── Steps ── */
+    .steps-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 16px;
+    }
+
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: left;
+      margin-bottom: 32px;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-text { font-size: 14px; line-height: 1.5; }
+    .step-text strong { font-weight: 600; }
+    .step-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Help ── */
+    .help-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .help-row a {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .help-row a:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 960px;
+      margin: 0 auto;
+      width: 100%;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--muted); transition: color 0.15s; }
+    .footer-links a:hover { color: var(--fg); }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 26px; }
+      .download-card { padding: 24px; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    MCPilot
+  </a>
+  <button class="lang-btn" id="langToggle" onclick="toggleLang()">JA</button>
+</nav>
+
+<!-- Main -->
+<main>
+  <div class="container">
+
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+
+    <h1 data-i18n="title">Purchase complete</h1>
+    <p class="subtitle" data-i18n="subtitle">
+      Thank you for buying MCPilot.<br>Download the app below and you're ready to go.
+    </p>
+
+    <!-- Download card -->
+    <div class="download-card">
+      <div class="download-label" data-i18n="download_label">Your download</div>
+      <div class="download-name">MCPilot.dmg</div>
+      <div class="download-meta" data-i18n="download_meta">macOS 12+ · Apple Silicon &amp; Intel · v0.1.0</div>
+      <a href="https://github.com/chankei613/mcp-server-manager/releases/download/v0.1.0/MCPilot-0.1.0.dmg" class="btn-download" id="downloadBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span data-i18n="download_btn">Download MCPilot</span>
+      </a>
+      <p class="download-note" data-i18n="download_note">A copy of this link has been sent to your receipt email.</p>
+    </div>
+
+    <!-- Install steps -->
+    <p class="steps-title" data-i18n="steps_title">Installation</p>
+    <div class="steps-list">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <strong data-i18n="s1_title">Open the DMG</strong>
+          <div class="step-sub" data-i18n="s1_sub">Double-click MCPilot.dmg to mount the disk image</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <strong data-i18n="s2_title">Drag to Applications</strong>
+          <div class="step-sub" data-i18n="s2_sub">Drag MCPilot.app into the Applications folder</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <strong data-i18n="s3_title">First launch</strong>
+          <div class="step-sub" data-i18n="s3_sub">Right-click MCPilot.app → Open (required on first run due to macOS Gatekeeper)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="help-row">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <span data-i18n="help_text">Having trouble?</span>
+      <a href="https://github.com/chankei613/mcp-server-manager/issues" target="_blank" data-i18n="help_link">Open an issue on GitHub</a>
+    </div>
+
+  </div>
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-left">
+    <div class="nav-logo-icon" style="width:22px;height:22px;border-radius:5px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    MCPilot
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/chankei613/mcp-server-manager" target="_blank">GitHub</a>
+    <a href="mailto:chankei613@gmail.com" data-i18n="footer_contact">Contact</a>
+  </div>
+</footer>
+
+<script>
+const T = {
+  en: {
+    title: 'Purchase complete',
+    subtitle: 'Thank you for buying MCPilot.<br>Download the app below and you\'re ready to go.',
+    download_label: 'Your download',
+    download_meta: 'macOS 12+ · Apple Silicon & Intel · v0.1.0',
+    download_btn: 'Download MCPilot',
+    download_note: 'A copy of this link has been sent to your receipt email.',
+    steps_title: 'Installation',
+    s1_title: 'Open the DMG',
+    s1_sub: 'Double-click MCPilot.dmg to mount the disk image',
+    s2_title: 'Drag to Applications',
+    s2_sub: 'Drag MCPilot.app into the Applications folder',
+    s3_title: 'First launch',
+    s3_sub: 'Right-click MCPilot.app → Open (required on first run due to macOS Gatekeeper)',
+    help_text: 'Having trouble?',
+    help_link: 'Open an issue on GitHub',
+    footer_contact: 'Contact',
+  },
+  ja: {
+    title: 'ご購入ありがとうございます',
+    subtitle: 'MCPilotをご購入いただきありがとうございます。<br>以下からアプリをダウンロードしてください。',
+    download_label: 'ダウンロード',
+    download_meta: 'macOS 12+ · Apple Silicon & Intel · v0.1.0',
+    download_btn: 'MCPilotをダウンロード',
+    download_note: 'ダウンロードリンクはStripeの領収書メールにも記載されています。',
+    steps_title: 'インストール手順',
+    s1_title: 'DMGを開く',
+    s1_sub: 'MCPilot.dmgをダブルクリックしてマウントします',
+    s2_title: 'Applicationsにドラッグ',
+    s2_sub: 'MCPilot.appをApplicationsフォルダにドラッグします',
+    s3_title: '初回起動',
+    s3_sub: 'MCPilot.appを右クリック → 開く（macOS Gatekeeperのため初回のみ必要）',
+    help_text: '問題が発生しましたか？',
+    help_link: 'GitHubでissueを開く',
+    footer_contact: 'お問い合わせ',
+  }
+}
+
+let currentLang = localStorage.getItem('lp_lang') || 'en'
+
+function applyLang(lang) {
+  const dict = T[lang]
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n')
+    if (!dict[key]) return
+    el.innerHTML = dict[key]
+  })
+  document.getElementById('langToggle').textContent = lang === 'en' ? 'JA' : 'EN'
+  document.documentElement.lang = lang
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'ja' : 'en'
+  localStorage.setItem('lp_lang', currentLang)
+  applyLang(currentLang)
+}
+
+applyLang(currentLang)
+</script>
+</body>
+</html>

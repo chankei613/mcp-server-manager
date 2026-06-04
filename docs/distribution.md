@@ -39,42 +39,70 @@ GitHub Releases（DMG）
 
 ### 必要なもの
 
-- Apple Developer Program 登録（$99/年）
-- Developer ID Application 証明書（Xcode から発行）
+- Apple Developer Program 登録（$99/年）✅ 完了
+- Developer ID Application 証明書（手順は下記）
+- App-Specific Password（公証用）
 
-### ビルド〜配布の手順
+### 証明書の取得手順（初回のみ）
 
-```bash
-# 1. ビルド（Dropbox の xattr 問題を先に解消）
-xattr -cr build/
-wails build
+```
+1. Xcode → Settings → Accounts → Apple ID 追加（chankei613@gmail.com）
+2. "Manage Certificates..." → "+" → Developer ID Application
+3. Xcode が自動で証明書を生成・Keychain に保存する
 
-# 2. コード署名
-codesign --deep --force --verify --verbose \
-  --sign "Developer ID Application: YOUR NAME (TEAM_ID)" \
-  --options runtime \
-  build/bin/MCPilot.app
-
-# 3. zip 化（公証はzipまたはdmgで送付）
-ditto -c -k --keepParent build/bin/MCPilot.app MCPilot.zip
-
-# 4. Apple に公証送付
-xcrun notarytool submit MCPilot.zip \
-  --apple-id "your@email.com" \
-  --team-id "TEAM_ID" \
-  --password "app-specific-password" \
-  --wait
-
-# 5. チケットを結合
-xcrun stapler staple build/bin/MCPilot.app
-
-# 6. DMG 化
-hdiutil create -volname MCPilot -srcfolder build/bin/MCPilot.app \
-  -ov -format UDZO MCPilot.dmg
+確認:
+security find-identity -v -p codesigning
+# → "Developer ID Application: アジサイ けいすけ (XXXXXXXXXX)" が表示されれば OK
 ```
 
+### App-Specific Password の発行
+
+```
+1. appleid.apple.com → サインイン
+2. セキュリティ → App 用パスワード → 生成
+3. 名前: "MCPilot Notarization" → 生成されたパスワードをメモ
+   形式: xxxx-xxxx-xxxx-xxxx
+```
+
+### Team ID の確認
+
+```bash
+security find-identity -v -p codesigning
+# 括弧内の英数字が Team ID: 例 "Developer ID Application: アジサイ けいすけ (ABC1234567)"
+```
+
+### ローカルリリースビルド（build-release.sh）
+
+```bash
+cd mcp-server-manager
+TEAM_ID=ABC1234567 APP_PASSWORD=xxxx-xxxx-xxxx-xxxx ./build-release.sh
+```
+
+スクリプトが自動で: ビルド → 署名 → 公証 → staple → DMG 作成 を実行する。
+
+### GitHub Actions シークレット設定（CI で署名する場合）
+
+```bash
+# .p12 を Base64 エクスポート
+# Keychain Access → "Developer ID Application: ..." を右クリック → 書き出す
+# → certificate.p12 で保存（パスワード設定必須）
+base64 -i certificate.p12 | pbcopy  # クリップボードにコピー
+```
+
+GitHub リポジトリ → Settings → Secrets and variables → Actions:
+
+| Secret 名 | 値 |
+|-----------|---|
+| `APPLE_CERTIFICATE` | 上記 base64 文字列 |
+| `APPLE_CERTIFICATE_PASSWORD` | .p12 書き出し時のパスワード |
+| `APPLE_TEAM_ID` | Team ID（例: ABC1234567） |
+| `APPLE_ID` | chankei613@gmail.com |
+| `APPLE_APP_PASSWORD` | App-Specific Password |
+
 > **Dropbox xattr 問題**：Dropbox がファイルに拡張属性を付加するため、
-> `codesign` が失敗する。`xattr -cr build/` を毎回実行すること。
+> `codesign` が失敗する。`build-release.sh` で自動的に `xattr -cr build/` を実行している。
+
+> **Bundle ID**: `dev.mcpilot`（`build/darwin/Info.plist` で設定済み）
 
 ---
 

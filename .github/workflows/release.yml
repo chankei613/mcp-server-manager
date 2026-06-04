@@ -6,26 +6,104 @@ on:
       - 'v*.*.*'
 
 jobs:
-  release:
-    strategy:
-      matrix:
-        include:
-          - os: macos-latest
-            platform: darwin/arm64
-            artifact: mcp-server-manager-darwin-arm64
-          - os: macos-13
-            platform: darwin/amd64
-            artifact: mcp-server-manager-darwin-amd64
-          - os: windows-latest
-            platform: windows/amd64
-            artifact: mcp-server-manager-windows-amd64
-
-    runs-on: ${{ matrix.os }}
+  # ── macOS: universal binary + 署名 + 公証 + DMG ────────────────────────
+  release-macos:
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
         with:
-          submodules: recursive
+          go-version: '1.22'
+          cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package.json
+
+      - name: Install Wails
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build (universal)
+        run: wails build -platform darwin/universal -o MCPilot
+
+      - name: Import signing certificate
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain
+          KEYCHAIN_PASSWORD=$(uuidgen)
+          echo "$APPLE_CERTIFICATE" | base64 --decode -o $RUNNER_TEMP/certificate.p12
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$RUNNER_TEMP/certificate.p12" \
+            -k "$KEYCHAIN_PATH" \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: \
+            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+      - name: Code sign
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          codesign \
+            --deep --force --verify --verbose \
+            --sign "Developer ID Application: アジサイ けいすけ ($APPLE_TEAM_ID)" \
+            --options runtime \
+            --entitlements build/darwin/entitlements.plist \
+            build/bin/MCPilot.app
+          codesign --verify --deep --strict build/bin/MCPilot.app
+
+      - name: Notarize
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          VERSION=$(grep 'AppVersion' version.go | sed 's/.*"\(.*\)".*/\1/')
+          ditto -c -k --keepParent build/bin/MCPilot.app MCPilot-${VERSION}.zip
+          xcrun notarytool submit MCPilot-${VERSION}.zip \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --wait
+          xcrun stapler staple build/bin/MCPilot.app
+          rm -f MCPilot-${VERSION}.zip
+
+      - name: Create DMG
+        run: |
+          VERSION=$(grep 'AppVersion' version.go | sed 's/.*"\(.*\)".*/\1/')
+          hdiutil create \
+            -volname MCPilot \
+            -srcfolder build/bin/MCPilot.app \
+            -ov -format UDZO \
+            MCPilot-${VERSION}.dmg
+          echo "DMG_PATH=MCPilot-${VERSION}.dmg" >> $GITHUB_ENV
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.DMG_PATH }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Windows ────────────────────────────────────────────────────────────
+  release-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-go@v5
         with:
@@ -46,11 +124,11 @@ jobs:
         working-directory: frontend
 
       - name: Build
-        run: wails build -platform ${{ matrix.platform }} -o ${{ matrix.artifact }}
+        run: wails build -platform windows/amd64 -o MCPilot-windows-amd64
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/bin/${{ matrix.artifact }}*
+          files: build/bin/MCPilot-windows-amd64*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
