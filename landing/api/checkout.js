@@ -1,6 +1,6 @@
 const Stripe = require('stripe');
 
-const SITE_URL = process.env.SITE_URL || 'https://mcpilot.app';
+const SITE_URL = process.env.SITE_URL || 'https://mcpilot.comet-labo.com';
 
 module.exports = async (req, res) => {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
