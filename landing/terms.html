@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MY1QL5CEZ2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-MY1QL5CEZ2');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — MCPilot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#ffffff; --fg:#0f0f0f; --muted:#6b7280; --border:#e5e7eb; --accent:#6366f1; }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--fg); line-height:1.8; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    nav { position:sticky; top:0; z-index:50; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo { display:flex; align-items:center; gap:8px; font-weight:700; font-size:18px; letter-spacing:-0.3px; color:var(--fg); }
+    .nav-logo-icon { width:28px; height:28px; background:var(--accent); border-radius:7px; display:flex; align-items:center; justify-content:center; }
+    .lang-btn { background:transparent; border:1px solid var(--border); border-radius:6px; padding:5px 10px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; color:var(--muted); }
+    .lang-btn:hover { color:var(--fg); border-color:var(--fg); }
+
+    .container { max-width:720px; margin:0 auto; padding:64px 24px 96px; }
+    h1 { font-size:32px; font-weight:800; letter-spacing:-0.5px; margin-bottom:8px; }
+    .meta { color:var(--muted); font-size:14px; margin-bottom:48px; }
+    h2 { font-size:16px; font-weight:700; margin:40px 0 12px; }
+    p { color:#374151; margin-bottom:12px; }
+    ul { padding-left:20px; margin-bottom:12px; }
+    li { color:#374151; margin-bottom:6px; }
+
+    footer { border-top:1px solid var(--border); padding:32px 24px; display:flex; align-items:center; justify-content:space-between; max-width:960px; margin:0 auto; flex-wrap:wrap; gap:16px; }
+    .footer-left { display:flex; align-items:center; gap:8px; font-weight:600; font-size:14px; }
+    .footer-links { display:flex; gap:24px; flex-wrap:wrap; }
+    .footer-links a { font-size:13px; color:var(--muted); }
+    .footer-links a:hover { color:var(--fg); text-decoration:none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    MCPilot
+  </a>
+  <button class="lang-btn" id="langToggle" onclick="toggleLang()">JA</button>
+</nav>
+
+<div class="container">
+  <h1 data-i18n="title">Terms of Service</h1>
+  <p class="meta" data-i18n="updated">Last updated: June 5, 2026</p>
+
+  <p data-i18n="intro">These Terms of Service govern the purchase and use of MCPilot (the "App"). By purchasing or using the App, you agree to these terms.</p>
+
+  <h2 data-i18n="s1_h">1. Definitions</h2>
+  <p data-i18n="s1_p">"User" means the individual or entity that has purchased the App.</p>
+
+  <h2 data-i18n="s2_h">2. License</h2>
+  <ul>
+    <li data-i18n="s2_l1">The App runs on macOS as a desktop application.</li>
+    <li data-i18n="s2_l2">The purchased license is for use by the purchaser only.</li>
+    <li data-i18n="s2_l3">The App may be used for any purpose — personal, commercial, or professional.</li>
+  </ul>
+
+  <h2 data-i18n="s3_h">3. Intellectual Property</h2>
+  <p data-i18n="s3_p">All copyrights and intellectual property rights in the App belong to the operator. Reproduction, redistribution, or sharing beyond the scope of these Terms is prohibited.</p>
+
+  <h2 data-i18n="s4_h">4. Prohibited Uses</h2>
+  <ul>
+    <li data-i18n="s4_l1">Selling, transferring, or redistributing the App to third parties</li>
+    <li data-i18n="s4_l2">Reverse engineering, decompiling, or disassembling the App</li>
+    <li data-i18n="s4_l3">Using the App for any illegal purpose</li>
+    <li data-i18n="s4_l4">Disclosing account information to third parties without authorization</li>
+  </ul>
+
+  <h2 data-i18n="s5_h">5. Cancellations & Refunds</h2>
+  <p data-i18n="s5_p">Due to the digital nature of this product, all sales are final. No cancellations, returns, or refunds are accepted for any reason after purchase. Please verify system requirements (macOS 12+) before purchasing.</p>
+
+  <h2 data-i18n="s6_h">6. Disclaimer</h2>
+  <ul>
+    <li data-i18n="s6_l1">The App is provided "as is" without warranty of any kind.</li>
+    <li data-i18n="s6_l2">The operator is not liable for any damages arising from the use of the App.</li>
+    <li data-i18n="s6_l3">The operator is not responsible for the availability or behavior of external MCP servers.</li>
+    <li data-i18n="s6_l4">Compatibility issues caused by macOS updates or third-party tool changes are not guaranteed.</li>
+  </ul>
+
+  <h2 data-i18n="s7_h">7. Support</h2>
+  <p data-i18n="s7_p">For inquiries, contact <a href="mailto:info@comet-labo.com">info@comet-labo.com</a>. Support is provided on a reasonable-effort basis.</p>
+
+  <h2 data-i18n="s8_h">8. Receipts</h2>
+  <p data-i18n="s8_p">Receipts are issued automatically by Stripe and sent to your purchase email address.</p>
+
+  <h2 data-i18n="s9_h">9. Changes to Terms</h2>
+  <p data-i18n="s9_p">These Terms may be updated without notice. Continued use of the App after changes constitutes acceptance of the updated Terms.</p>
+
+  <h2 data-i18n="s10_h">10. Governing Law</h2>
+  <p data-i18n="s10_p">These Terms are governed by the laws of Japan. The Fukuoka District Court shall have exclusive jurisdiction for any disputes.</p>
+</div>
+
+<footer>
+  <div class="footer-left">
+    <div class="nav-logo-icon" style="width:22px;height:22px;border-radius:5px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    MCPilot
+  </div>
+  <div class="footer-links">
+    <a href="/terms.html" data-i18n="f_terms">Terms</a>
+    <a href="/privacy.html" data-i18n="f_privacy">Privacy</a>
+    <a href="/tokusho.html" data-i18n="f_tokusho">Tokusho-ho</a>
+    <a href="mailto:info@comet-labo.com" data-i18n="f_contact">Contact</a>
+  </div>
+</footer>
+
+<script>
+const T = {
+  en: {
+    title: 'Terms of Service',
+    updated: 'Last updated: June 5, 2026',
+    intro: 'These Terms of Service govern the purchase and use of MCPilot (the "App"). By purchasing or using the App, you agree to these terms.',
+    s1_h: '1. Definitions',
+    s1_p: '"User" means the individual or entity that has purchased the App.',
+    s2_h: '2. License',
+    s2_l1: 'The App runs on macOS as a desktop application.',
+    s2_l2: 'The purchased license is for use by the purchaser only.',
+    s2_l3: 'The App may be used for any purpose — personal, commercial, or professional.',
+    s3_h: '3. Intellectual Property',
+    s3_p: 'All copyrights and intellectual property rights in the App belong to the operator. Reproduction, redistribution, or sharing beyond the scope of these Terms is prohibited.',
+    s4_h: '4. Prohibited Uses',
+    s4_l1: 'Selling, transferring, or redistributing the App to third parties',
+    s4_l2: 'Reverse engineering, decompiling, or disassembling the App',
+    s4_l3: 'Using the App for any illegal purpose',
+    s4_l4: 'Disclosing account information to third parties without authorization',
+    s5_h: '5. Cancellations & Refunds',
+    s5_p: 'Due to the digital nature of this product, all sales are final. No cancellations, returns, or refunds are accepted for any reason after purchase. Please verify system requirements (macOS 12+) before purchasing.',
+    s6_h: '6. Disclaimer',
+    s6_l1: 'The App is provided "as is" without warranty of any kind.',
+    s6_l2: 'The operator is not liable for any damages arising from the use of the App.',
+    s6_l3: 'The operator is not responsible for the availability or behavior of external MCP servers.',
+    s6_l4: 'Compatibility issues caused by macOS updates or third-party tool changes are not guaranteed.',
+    s7_h: '7. Support',
+    s7_p: 'For inquiries, contact <a href="mailto:info@comet-labo.com">info@comet-labo.com</a>. Support is provided on a reasonable-effort basis.',
+    s8_h: '8. Receipts',
+    s8_p: 'Receipts are issued automatically by Stripe and sent to your purchase email address.',
+    s9_h: '9. Changes to Terms',
+    s9_p: 'These Terms may be updated without notice. Continued use of the App after changes constitutes acceptance of the updated Terms.',
+    s10_h: '10. Governing Law',
+    s10_p: 'These Terms are governed by the laws of Japan. The Fukuoka District Court shall have exclusive jurisdiction for any disputes.',
+    f_terms: 'Terms', f_privacy: 'Privacy', f_tokusho: 'Tokusho-ho', f_contact: 'Contact',
+  },
+  ja: {
+    title: '利用規約',
+    updated: '最終更新日: 2026年6月5日',
+    intro: '本利用規約は、MCPilot（以下「本アプリ」）の購入および使用に関する条件を定めるものです。購入または使用をもって、本規約に同意したものとみなします。',
+    s1_h: '第1条（利用者の定義）',
+    s1_p: '本規約における「利用者」とは、本アプリを購入した個人または法人を指します。',
+    s2_h: '第2条（利用について）',
+    s2_l1: '本アプリは macOS 上で動作するデスクトップアプリケーションです。',
+    s2_l2: '購入ライセンスは購入者本人の使用を対象とします。',
+    s2_l3: '業務・個人・商用目的を問わず、あらゆる用途でご利用いただけます。',
+    s3_h: '第3条（権利の帰属）',
+    s3_p: '本アプリに関する著作権その他の知的財産権は、運営者に帰属します。本規約に定める範囲を超えた複製・転載・配布は禁止します。',
+    s4_h: '第4条（禁止事項）',
+    s4_l1: '本アプリを第三者に販売・譲渡・再配布すること',
+    s4_l2: 'リバースエンジニアリング、逆コンパイル、逆アセンブル',
+    s4_l3: '本アプリを利用した違法行為',
+    s4_l4: '運営者の許可なくアカウント情報を第三者に開示すること',
+    s5_h: '第5条（キャンセル・返金）',
+    s5_p: '本アプリはデジタルコンテンツの性質上、購入完了後のキャンセル・返品・返金はいかなる理由であってもお受けできません。購入前に動作環境（macOS 12以上）をご確認ください。',
+    s6_h: '第6条（免責事項）',
+    s6_l1: '本アプリは現状有姿で提供されます。特定目的への適合性・無欠陥性を保証しません。',
+    s6_l2: '本アプリの使用により生じた損害について、運営者は責任を負いません。',
+    s6_l3: '外部 MCP サーバーの動作・可用性については関知しません。',
+    s6_l4: 'macOS のバージョンアップや外部ツールの変更による動作不具合について保証しません。',
+    s7_h: '第7条（サポート）',
+    s7_p: 'お問い合わせは <a href="mailto:info@comet-labo.com">info@comet-labo.com</a> までご連絡ください。サポートは合理的な範囲で対応します。',
+    s8_h: '第8条（領収書）',
+    s8_p: '領収書は Stripe による自動発行メールをもって有効とします。',
+    s9_h: '第9条（規約の変更）',
+    s9_p: '本規約は予告なく変更される場合があります。変更後も本アプリを使用した場合、変更後の規約に同意したものとみなします。',
+    s10_h: '第10条（準拠法・管轄）',
+    s10_p: '本規約は日本法に準拠し、福岡地方裁判所を第一審の専属管轄裁判所とします。',
+    f_terms: '利用規約', f_privacy: 'プライバシーポリシー', f_tokusho: '特定商取引法', f_contact: 'お問い合わせ',
+  }
+}
+
+let currentLang = localStorage.getItem('lp_lang') || 'en'
+
+function applyLang(lang) {
+  const dict = T[lang]
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n')
+    if (!dict[key]) return
+    el.innerHTML = dict[key]
+  })
+  document.getElementById('langToggle').textContent = lang === 'en' ? 'JA' : 'EN'
+  document.documentElement.lang = lang
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'ja' : 'en'
+  localStorage.setItem('lp_lang', currentLang)
+  applyLang(currentLang)
+}
+
+applyLang(currentLang)
+</script>
+</body>
+</html>

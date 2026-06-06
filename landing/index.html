@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MY1QL5CEZ2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-MY1QL5CEZ2');
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MCPilot — Visual Client for MCP Servers</title>
@@ -340,10 +348,6 @@
   <div class="nav-actions">
     <a href="#features" class="btn btn-ghost" data-i18n="nav_features">Features</a>
     <a href="#pricing" class="btn btn-ghost" data-i18n="nav_pricing">Pricing</a>
-    <a href="https://github.com/chankei613/mcp-server-manager" target="_blank" class="btn btn-outline">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.164 6.839 9.489.5.09.682-.218.682-.484 0-.236-.009-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.645.35-1.085.636-1.335-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.337 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
-      GitHub
-    </a>
     <button class="lang-btn" id="langToggle" onclick="toggleLang()">JA</button>
     <a href="#pricing" class="btn btn-primary" data-i18n="nav_cta">Get MCPilot — $9</a>
   </div>
@@ -369,10 +373,10 @@
 <!-- Screenshot gallery -->
 <div class="screenshot-wrap">
   <div class="screenshot-tabs">
-    <button class="screenshot-tab active" onclick="showTab(0)">Server List</button>
-    <button class="screenshot-tab" onclick="showTab(1)">Connect &amp; Inspect</button>
-    <button class="screenshot-tab" onclick="showTab(2)">Execute Tools</button>
-    <button class="screenshot-tab" onclick="showTab(3)">Import Config</button>
+    <button class="screenshot-tab active" onclick="showTab(0)" data-i18n="tab1">Server List</button>
+    <button class="screenshot-tab" onclick="showTab(1)" data-i18n="tab2">Connect &amp; Inspect</button>
+    <button class="screenshot-tab" onclick="showTab(2)" data-i18n="tab3">Execute Tools</button>
+    <button class="screenshot-tab" onclick="showTab(3)" data-i18n="tab4">Import Config</button>
   </div>
   <div class="screenshot-panel active"><img src="app-sc01.png" alt="MCPilot — Server List" /></div>
   <div class="screenshot-panel"><img src="app-sc02.png" alt="MCPilot — Connect & Inspect" /></div>
@@ -444,19 +448,19 @@
       <div class="step-num">1</div>
       <h3 data-i18n="s1_title">Import your config</h3>
       <p data-i18n="s1_body">Select your tool (Claude, Cursor, Windsurf) and MCPilot imports all your MCP servers automatically.</p>
-      <div class="step-code">↓ Import from Claude Code</div>
+      <div class="step-code" data-i18n="step1_code">↓ Import from Claude Code</div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <h3 data-i18n="s2_title">Connect a server</h3>
       <p data-i18n="s2_body">Click Connect. MCPilot starts the process, initializes the MCP session, and lists all available tools.</p>
-      <div class="step-code">● Connected — 12 tools loaded</div>
+      <div class="step-code" data-i18n="step2_code">● Connected — 12 tools loaded</div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <h3 data-i18n="s3_title">Execute any tool</h3>
       <p data-i18n="s3_body">Pick a tool, fill in the form, and hit Execute. See the full JSON response instantly.</p>
-      <div class="step-code">▶  Execute → 200 OK</div>
+      <div class="step-code" data-i18n="step3_code">▶  Execute → 200 OK</div>
     </div>
   </div>
 </section>
@@ -485,7 +489,7 @@
       <li><div class="check"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg></div><span data-i18n="pf6">All future updates included</span></li>
     </ul>
 
-    <a href="https://buy.stripe.com/bJe00c9l70AQbSraencV200" class="btn btn-primary btn-large" style="width:100%;justify-content:center;" data-i18n="pricing_btn">
+    <a href="/api/checkout" class="btn btn-primary btn-large" style="width:100%;justify-content:center;" data-i18n="pricing_btn">
       Buy MCPilot — $9
     </a>
     <p style="font-size:12px;color:var(--muted);margin-top:12px;" data-i18n="pricing_secure">Secure checkout via Stripe · macOS 12+</p>
@@ -505,8 +509,10 @@
     MCPilot
   </div>
   <div class="footer-links">
-    <a href="https://github.com/chankei613/mcp-server-manager" target="_blank">GitHub</a>
-    <a href="mailto:chankei613@gmail.com" data-i18n="footer_contact">Contact</a>
+    <a href="/terms.html" data-i18n="footer_terms">Terms</a>
+    <a href="/privacy.html" data-i18n="footer_privacy">Privacy</a>
+    <a href="/tokusho.html" data-i18n="footer_tokusho">Tokusho-ho</a>
+    <a href="mailto:info@comet-labo.com" data-i18n="footer_contact">Contact</a>
   </div>
 </footer>
 
@@ -559,6 +565,11 @@ const T = {
     pf6: 'All future updates included',
     pricing_btn: 'Buy MCPilot — $9',
     pricing_secure: 'Secure checkout via Stripe · macOS 12+',
+    tab1: 'Server List', tab2: 'Connect & Inspect', tab3: 'Execute Tools', tab4: 'Import Config',
+    step1_code: '↓ Import from Claude Code',
+    step2_code: '● Connected — 12 tools loaded',
+    step3_code: '▶  Execute → 200 OK',
+    footer_terms: 'Terms', footer_privacy: 'Privacy', footer_tokusho: 'Tokusho-ho',
     footer_contact: 'Contact',
   },
   ja: {
@@ -608,6 +619,11 @@ const T = {
     pf6: '今後のアップデートもすべて含む',
     pricing_btn: 'MCPilotを購入 — $9',
     pricing_secure: 'Stripe で安全に決済 · macOS 12+',
+    tab1: 'サーバー一覧', tab2: '接続・確認', tab3: 'ツール実行', tab4: '設定インポート',
+    step1_code: '↓ Claude Code からインポート',
+    step2_code: '● 接続完了 — 12個のツールを読み込みました',
+    step3_code: '▶  実行 → 200 OK',
+    footer_terms: '利用規約', footer_privacy: 'プライバシーポリシー', footer_tokusho: '特定商取引法',
     footer_contact: 'お問い合わせ',
   }
 }

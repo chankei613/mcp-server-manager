@@ -1,8 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MY1QL5CEZ2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-MY1QL5CEZ2');
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>Thank you — MCPilot</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -335,11 +344,11 @@
       <div class="download-label" data-i18n="download_label">Your download</div>
       <div class="download-name">MCPilot.dmg</div>
       <div class="download-meta" data-i18n="download_meta">macOS 12+ · Apple Silicon &amp; Intel · v0.1.0</div>
-      <a href="https://github.com/chankei613/mcp-server-manager/releases/download/v0.1.0/MCPilot-0.1.0.dmg" class="btn-download" id="downloadBtn">
+      <a href="#" class="btn-download" id="downloadBtn" style="opacity:0.4;pointer-events:none;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <span data-i18n="download_btn">Download MCPilot</span>
       </a>
-      <p class="download-note" data-i18n="download_note">A copy of this link has been sent to your receipt email.</p>
+      <p class="download-note" id="downloadNote" data-i18n="download_note">A copy of this link has been sent to your receipt email.</p>
     </div>
 
     <!-- Install steps -->
@@ -371,7 +380,7 @@
     <div class="help-row">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
       <span data-i18n="help_text">Having trouble?</span>
-      <a href="https://github.com/chankei613/mcp-server-manager/issues" target="_blank" data-i18n="help_link">Open an issue on GitHub</a>
+      <a href="mailto:info@comet-labo.com" data-i18n="help_link">Contact support</a>
     </div>
 
   </div>
@@ -390,8 +399,10 @@
     MCPilot
   </div>
   <div class="footer-links">
-    <a href="https://github.com/chankei613/mcp-server-manager" target="_blank">GitHub</a>
-    <a href="mailto:chankei613@gmail.com" data-i18n="footer_contact">Contact</a>
+    <a href="/terms.html">利用規約</a>
+    <a href="/privacy.html">プライバシーポリシー</a>
+    <a href="/tokusho.html">特定商取引法</a>
+    <a href="mailto:info@comet-labo.com" data-i18n="footer_contact">Contact</a>
   </div>
 </footer>
 
@@ -412,7 +423,7 @@ const T = {
     s3_title: 'First launch',
     s3_sub: 'Right-click MCPilot.app → Open (required on first run due to macOS Gatekeeper)',
     help_text: 'Having trouble?',
-    help_link: 'Open an issue on GitHub',
+    help_link: 'Contact support',
     footer_contact: 'Contact',
   },
   ja: {
@@ -430,7 +441,7 @@ const T = {
     s3_title: '初回起動',
     s3_sub: 'MCPilot.appを右クリック → 開く（macOS Gatekeeperのため初回のみ必要）',
     help_text: '問題が発生しましたか？',
-    help_link: 'GitHubでissueを開く',
+    help_link: 'サポートに問い合わせる',
     footer_contact: 'お問い合わせ',
   }
 }
@@ -455,6 +466,22 @@ function toggleLang() {
 }
 
 applyLang(currentLang)
+
+// Download button: enable only when session_id is present
+const params = new URLSearchParams(window.location.search)
+const sessionId = params.get('session_id')
+const downloadBtn = document.getElementById('downloadBtn')
+const downloadNote = document.getElementById('downloadNote')
+
+if (sessionId) {
+  downloadBtn.href = `/api/download?session_id=${encodeURIComponent(sessionId)}`
+  downloadBtn.style.opacity = ''
+  downloadBtn.style.pointerEvents = ''
+} else {
+  downloadNote.innerHTML = currentLang === 'ja'
+    ? '購入完了後にStripeから届いたリンクをご利用ください。'
+    : 'Please use the link from your Stripe receipt email.'
+}
 </script>
 </body>
 </html>
