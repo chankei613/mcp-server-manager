@@ -2,10 +2,11 @@
 # MCPilot release build: wails build → codesign → notarize → staple → DMG
 set -e
 
-# ── 設定（要変更） ──────────────────────────────────────────────────────────
-APPLE_ID="chankei613@gmail.com"
-TEAM_ID="${TEAM_ID:-}"          # 環境変数 or 直書き（例: "ABC1234567"）
-APP_PASSWORD="${APP_PASSWORD:-}" # App-specific password（環境変数推奨）
+# ── 設定（全て環境変数で渡す。個人情報をスクリプトに直書きしない） ──────────────
+APPLE_ID="${APPLE_ID:-}"
+TEAM_ID="${TEAM_ID:-}"
+APP_PASSWORD="${APP_PASSWORD:-}" # App-specific password
+DEVELOPER_NAME="${DEVELOPER_NAME:-}" # Developer ID証明書の名義（"Developer ID Application: <name> (<TEAM_ID>)"の<name>部分）
 
 APP_NAME="MCPilot"
 VERSION=$(grep 'AppVersion' version.go | sed 's/.*"\(.*\)".*/\1/')
@@ -14,18 +15,18 @@ ZIP_PATH="${APP_NAME}-${VERSION}.zip"
 DMG_PATH="${APP_NAME}-${VERSION}.dmg"
 ENTITLEMENTS="build/darwin/entitlements.plist"
 
-# TEAM_ID が未設定なら Developer ID 一覧を表示して終了
-if [ -z "$TEAM_ID" ]; then
-  echo "ERROR: TEAM_ID が未設定です。"
-  echo "以下のコマンドで Developer ID を確認してください:"
+# 必須の環境変数が未設定なら案内して終了
+if [ -z "$TEAM_ID" ] || [ -z "$APPLE_ID" ] || [ -z "$DEVELOPER_NAME" ] || [ -z "$APP_PASSWORD" ]; then
+  echo "ERROR: APPLE_ID / TEAM_ID / DEVELOPER_NAME / APP_PASSWORD が未設定です。"
+  echo "以下のコマンドで Developer ID 一覧を確認してください:"
   echo "  security find-identity -v -p codesigning"
   echo ""
   echo "実行例:"
-  echo "  TEAM_ID=ABC1234567 APP_PASSWORD=xxxx-xxxx-xxxx-xxxx ./build-release.sh"
+  echo "  APPLE_ID=you@example.com TEAM_ID=ABC1234567 DEVELOPER_NAME=\"Your Name\" APP_PASSWORD=xxxx-xxxx-xxxx-xxxx ./build-release.sh"
   exit 1
 fi
 
-IDENTITY="Developer ID Application: keisuke haraguchi (${TEAM_ID})"
+IDENTITY="Developer ID Application: ${DEVELOPER_NAME} (${TEAM_ID})"
 
 echo "==> Building MCPilot v${VERSION}..."
 
