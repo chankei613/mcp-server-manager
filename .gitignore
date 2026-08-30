@@ -17,6 +17,14 @@ dist/
 .env
 .env.*
 !.env.example
+frontend/package.json.md5
+frontend/test-results/
+
+# Vercel (landing/)
+.vercel
+
+# Release artifacts (the shipped copy lives in landing/)
+/*.dmg
 
 # SQLite
 *.db
